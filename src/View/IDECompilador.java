@@ -1,154 +1,89 @@
-package View;
+package View.IDECompilador;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 
 public class IDECompilador extends JFrame {
-
-
-    private JButton button1;
-    private JPanel Panel;
-
-
-    private String pathLexicalAnalyzer;
-    private String pathSyntacticAnalyzer;
-
+    private JTextArea codeEditor;
+    private JTable symbolTable, errorTable;
+    private JButton openButton, executeButton, stopButton;
 
     public IDECompilador() {
-        setContentPane(Panel);
-        pathLexicalAnalyzer = "";
-        pathSyntacticAnalyzer = "";
+        setTitle("IDE Compilador");
+        setSize(1000, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(new Color(40, 44, 52));
 
-//        button1.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                JFileChooser chooser = new JFileChooser();
-//                chooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
-//                FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos Lexicos", "flex");
-//                chooser.setFileFilter(filter);
-//                int selection  = chooser.showOpenDialog(null);
-//                boolean ready = false;
-//
-//                if(selection == JFileChooser.APPROVE_OPTION){
-//                    if(chooser.getSelectedFile() != null){
-//                        pathLexicalAnalyzer = chooser.getSelectedFile().getAbsolutePath();
-//
-//                        File file = new File(pathLexicalAnalyzer);
-//
-//                        if(file.exists()){
-//                            try{
-//                                //Compilar el archivo .Flex
-//                                jflex.Main.main(new String[]{pathLexicalAnalyzer});
-//
-//                                JOptionPane.showMessageDialog(null,
-//                                        "El archivo (.flex) ha compilado correctamente.",
-//                                        "Aviso",JOptionPane.INFORMATION_MESSAGE);
-//
-//                                ready = true;
-//                                //System.exit(0);
-//                            }
-//                            catch(Exception ex){
-//                                JOptionPane.showMessageDialog(null,
-//                                        "No se ha podido compilar el archivo (.flex).",
-//                                        "ERROR",JOptionPane.ERROR_MESSAGE);
-//                            }
-//                        }
-//                        else{
-//                            JOptionPane.showMessageDialog(null,
-//                                    "El archivo seleccionado no puede ser encontrado.",
-//                                    "ERROR",JOptionPane.ERROR_MESSAGE);
-//                        }
-//                    }
-//                }
-//
-//                if(ready){
-//                    /* Cargar el archivo .cup para generar el parser */
-//                    chooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
-//                    filter = new FileNameExtensionFilter("Archivos Sintacticos", "cup");
-//                    chooser.setFileFilter(filter);
-//                    selection = chooser.showOpenDialog(null);
-//
-//                    if(selection == JFileChooser.APPROVE_OPTION){
-//                        if(chooser.getSelectedFile() != null){
-//                            pathSyntacticAnalyzer = chooser.getSelectedFile().getAbsolutePath();
-//
-//                            File file = new File(pathSyntacticAnalyzer);
-//
-//                            if(file.exists()){
-//                                try{
-//                                    //Compilar el archivo .cup
-//                                    String[] argSyntactic = {"-parser", "SyntacticAnalyzer", pathSyntacticAnalyzer};
-//
-//                                    java_cup.Main.main(argSyntactic);
-//
-//                                    JOptionPane.showMessageDialog(null,
-//                                            "El archivo (.cup) ha compilado correctamente.",
-//                                            "Aviso",JOptionPane.INFORMATION_MESSAGE);
-//
-//                                    boolean movFileSym = MoveFiles("C:\\Users\\bryan\\Documents\\GitHub\\Lexical-scanner-Mini-C-\\Lexical Scanner Mini C#\\sym.java");
-//                                    boolean movFileSyntacticAnalizer = MoveFiles("C:\\Users\\bryan\\Documents\\GitHub\\Lexical-scanner-Mini-C-\\Lexical Scanner Mini C#\\SyntacticAnalyzer.java");
-//
-//                                    if(movFileSym && movFileSyntacticAnalizer){
-//                                        System.out.println("Generado!");
-//                                        System.exit(0);
-//                                    }
-//                                    else{
-//                                        System.out.println("Fallo en el movimiento de archivos!");
-//                                        System.exit(0);
-//                                    }
-//
-//                                }
-//                                catch(Exception exception){
-//                                    JOptionPane.showMessageDialog(null,
-//                                            "No se ha podido compilar el archivo (.cup).",
-//                                            "ERROR",JOptionPane.ERROR_MESSAGE);
-//                                }
-//                            }
-//                            else{
-//                                JOptionPane.showMessageDialog(null,
-//                                        "El archivo seleccionado no puede ser encontrado.",
-//                                        "ERROR",JOptionPane.ERROR_MESSAGE);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        });
+        // Panel superior con botones
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(30, 30, 30));
 
+        openButton = createStyledButton("Abrir", new Color(50, 205, 50), "src/View/ICONOS/abrir.png");// Verde
+        executeButton = createStyledButton("Ejecutar", new Color(255, 140, 0), "src/View/ICONOS/iniciar.png"); // Naranja
+        stopButton = createStyledButton("Detener", new Color(220, 20, 60), "src/View/ICONOS/parar.png");// Rojo
 
+        buttonPanel.add(openButton);
+        buttonPanel.add(executeButton);
+        buttonPanel.add(stopButton);
+
+        add(buttonPanel, BorderLayout.NORTH);
+
+        // Panel principal dividido en dos: Editor de código y tabla de símbolos
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        mainSplitPane.setResizeWeight(0.7);
+
+        // Área de código
+        codeEditor = new JTextArea();
+        codeEditor.setBackground(new Color(30, 30, 30));
+        codeEditor.setForeground(Color.WHITE);
+        codeEditor.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        JScrollPane codeScrollPane = new JScrollPane(codeEditor);
+
+        // Panel derecho con tabla de símbolos
+        String[] columnNames = {"ID", "Símbolo", "TipoVar", "Número"};
+        DefaultTableModel symbolModel = new DefaultTableModel(columnNames, 0);
+        symbolTable = new JTable(symbolModel);
+        symbolTable.setBackground(new Color(60, 63, 65));
+        symbolTable.setForeground(Color.WHITE);
+        JScrollPane tableScrollPane = new JScrollPane(symbolTable);
+
+        mainSplitPane.setLeftComponent(codeScrollPane);
+        mainSplitPane.setRightComponent(tableScrollPane);
+
+        // Panel inferior con tabla de errores
+        String[] errorColumns = {"Id", "Numero de Línea", "Error", "Solución", "Descripción"};
+        DefaultTableModel errorModel = new DefaultTableModel(errorColumns, 0);
+        errorTable = new JTable(errorModel);
+        errorTable.setBackground(new Color(50, 50, 50));
+        errorTable.setForeground(Color.RED);
+        JScrollPane errorScrollPane = new JScrollPane(errorTable);
+
+        JSplitPane verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, errorScrollPane);
+        verticalSplitPane.setResizeWeight(0.8);
+        add(verticalSplitPane, BorderLayout.CENTER);
     }
 
-    public static boolean MoveFiles(String path) {
-        boolean successful = false;
-        File file = new File(path);
-        if (file.exists()) {
-            System.out.println("\n*** Moviendo: " + file + " \n***");
-            Path currentRelativePath = Paths.get("");
-            String newDir = currentRelativePath.toAbsolutePath().toString()
-                    + File.separator + "src" + File.separator
-                    + "lexical" + File.separator + "scanner" + File.separator
-                    + "mini" + File.separator + "c" + File.separator + file.getName();
-            File lastFile = new File(newDir);
-            lastFile.delete();
-            if (file.renameTo(new File(newDir))) {
-                System.out.println("\n*** Generado " + file + "***\n");
-                successful = true;
-            } else {
-                System.out.println("\n*** No movido " + file + " ***\n");
-            }
+    private JButton createStyledButton(String text, Color color, String iconPath) {
+        JButton button = new JButton(text);
+        button.setBackground(color);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setPreferredSize(new Dimension(120, 40));
 
-        } else {
-            System.out.println("\n*** Codigo no existente ***\n");
-        }
-        return successful;
+        // Cargar y redimensionar icono
+        ImageIcon icon = new ImageIcon(iconPath);
+        Image img = icon.getImage();
+        Image resizedImg = img.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+        button.setIcon(new ImageIcon(resizedImg));
+
+        return button;
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new IDECompilador().setVisible(true));
     }
 }
