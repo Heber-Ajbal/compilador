@@ -4,16 +4,26 @@ import java_cup.runtime.Symbol;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class IDECompilador extends JFrame {
-    private JTextArea codeEditor;
+    private JTextPane  codeEditor;
     private JTable symbolTable, errorTable;
     private JButton openButton, executeButton, stopButton;
+    Set<String> reservedWords = new HashSet<>(Arrays.asList(
+            "IF", "WHILE", "FOR", "CLASS", "Int", "FLOAT", "RETURN",
+            "PUBLIC", "STATIC", "VOID", "ELSE", "DO", "BREAK", "NEW"
+    ));
 
     public IDECompilador() {
         setTitle("IDE Compilador");
@@ -41,7 +51,7 @@ public class IDECompilador extends JFrame {
         mainSplitPane.setResizeWeight(0.7);
 
         // Área de código
-        codeEditor = new JTextArea();
+        codeEditor = new JTextPane ();
         codeEditor.setBackground(new Color(30, 30, 30));
         codeEditor.setForeground(Color.WHITE);
         codeEditor.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -70,35 +80,57 @@ public class IDECompilador extends JFrame {
         verticalSplitPane.setResizeWeight(0.8);
         add(verticalSplitPane, BorderLayout.CENTER);
 
+        StyledDocument doc = codeEditor.getStyledDocument();
+
+        Style keywordStyle = codeEditor.addStyle("Keyword", null);
+        StyleConstants.setForeground(keywordStyle, Color.BLUE);
+        StyleConstants.setBold(keywordStyle, true);
+
+        Style normalStyle = codeEditor.addStyle("Normal", null);
+        StyleConstants.setForeground(normalStyle, Color.WHITE);
+
         executeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 symbolModel.setRowCount(0);
 
+
                 try {
-                    // Abre un archivo de entrada
+
                     String code = codeEditor.getText();
+                    doc.remove(0, doc.getLength()); // Limpia el área
+                    doc.insertString(0, code, normalStyle); // Muestra todo el código original
+
                     InputStream inputStream = new ByteArrayInputStream(code.getBytes());
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                     LexicalScanner scanner = new LexicalScanner(reader);
 
-                    // Ejecutar el análisis léxico
-                    boolean hasErrors = false; // Variable para detectar errores
-
-                    // Ejecutar el análisis léxico
+// Ejecutar análisis léxico
                     while (scanner.yylex() != null) {}
                     ArrayList<Yytoken> tokens = scanner.tokens;
 
+                    int cursor = 0; // posición dentro del texto original
+
                     for (Yytoken token : tokens) {
-                        if(token.error){
-                            System.out.println(token.isError());
+                        // Buscamos la próxima aparición del token desde la posición actual
+                        int index = code.indexOf(token.token, cursor);
+
+                        if (index >= 0) {
+                            // Si es palabra reservada, aplicar color
+                            if (reservedWords.contains(token.type)) {
+                                doc.setCharacterAttributes(index, token.token.length(), keywordStyle, true);
+                            }
+                            cursor = index + token.token.length(); // Avanza para la próxima búsqueda
+                        }
+
+                        // Tabla de símbolos
+                        Object[] row = {token.token, token.type, token.line};
+                        symbolModel.addRow(row);
+
+                        if (token.error) {
                             Object[] errorRow = {token.isError()};
                             errorModel.addRow(errorRow);
                         }
-                        Object[] row = {token.token, token.type, token.line};
-
-                        // Agrega la fila al modelo de la tabla
-                        symbolModel.addRow(row);
                     }
 
                 } catch (Exception ex) {
