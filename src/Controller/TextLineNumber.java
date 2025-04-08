@@ -12,12 +12,13 @@ public class TextLineNumber extends JPanel {
     private final Font font = new Font("Monospaced", Font.PLAIN, 14);
     private final Color numberColor = new Color(160, 160, 160);
 
+
     public TextLineNumber(JTextPane textPane) {
         this.textPane = textPane;
         setBackground(new Color(30, 30, 30));
         setForeground(numberColor);
         setFont(font);
-        setPreferredSize(new Dimension(40, Integer.MAX_VALUE));
+        setPreferredSize(new Dimension(40, textPane.getHeight()));
 
         // Redibujar cuando el documento cambia
         textPane.getDocument().addDocumentListener(new DocumentListener() {
@@ -28,6 +29,14 @@ public class TextLineNumber extends JPanel {
 
         // Redibujar cuando se mueve el cursor
         textPane.addCaretListener(e -> repaint());
+
+        textPane.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                setPreferredSize(new Dimension(40, textPane.getHeight()));
+                revalidate();
+            }
+        });
     }
 
     @Override
@@ -58,5 +67,9 @@ public class TextLineNumber extends JPanel {
             }
         }
     }
+
+
+
+
 }
 

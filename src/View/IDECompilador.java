@@ -90,6 +90,7 @@ public class IDECompilador extends JFrame {
         Style normalStyle = codeEditor.addStyle("Normal", null);
         StyleConstants.setForeground(normalStyle, Color.WHITE);
 
+
         executeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
