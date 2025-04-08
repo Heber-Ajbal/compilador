@@ -1,5 +1,6 @@
 package View;
 
+import Controller.TextLineNumber;
 import java_cup.runtime.Symbol;
 
 import javax.swing.*;
@@ -20,10 +21,6 @@ public class IDECompilador extends JFrame {
     private JTextPane  codeEditor;
     private JTable symbolTable, errorTable;
     private JButton openButton, executeButton, stopButton;
-    Set<String> reservedWords = new HashSet<>(Arrays.asList(
-            "IF", "WHILE", "FOR", "CLASS", "Int", "FLOAT", "RETURN",
-            "PUBLIC", "STATIC", "VOID", "ELSE", "DO", "BREAK", "NEW"
-    ));
 
     public IDECompilador() {
         setTitle("IDE Compilador");
@@ -54,8 +51,12 @@ public class IDECompilador extends JFrame {
         codeEditor = new JTextPane ();
         codeEditor.setBackground(new Color(30, 30, 30));
         codeEditor.setForeground(Color.WHITE);
+        codeEditor.setCaretColor(Color.WHITE);
+        codeEditor.setCaretPosition(0);
         codeEditor.setFont(new Font("Monospaced", Font.PLAIN, 14));
         JScrollPane codeScrollPane = new JScrollPane(codeEditor);
+        TextLineNumber lineNumberView = new TextLineNumber(codeEditor);
+        codeScrollPane.setRowHeaderView(lineNumberView);
 
         // Panel derecho con tabla de símbolos
         String[] columnNames = {"Token", "Tipo", "linea"};
@@ -93,8 +94,6 @@ public class IDECompilador extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 symbolModel.setRowCount(0);
-
-
                 try {
 
                     String code = codeEditor.getText();
@@ -114,13 +113,17 @@ public class IDECompilador extends JFrame {
                     for (Yytoken token : tokens) {
                         // Buscamos la próxima aparición del token desde la posición actual
                         int index = code.indexOf(token.token, cursor);
-
                         if (index >= 0) {
-                            // Si es palabra reservada, aplicar color
-                            if (reservedWords.contains(token.type)) {
-                                doc.setCharacterAttributes(index, token.token.length(), keywordStyle, true);
+                            // Estilo dinámico con el color definido en el token
+                            Style style = codeEditor.addStyle("tokenStyle", null);
+                            StyleConstants.setForeground(style, Color.decode(token.color));
+
+                            if (token.type.equalsIgnoreCase("keyword") || token.type.equalsIgnoreCase("type")) {
+                                StyleConstants.setBold(style, true);
                             }
-                            cursor = index + token.token.length(); // Avanza para la próxima búsqueda
+
+                            doc.setCharacterAttributes(index, token.token.length(), style, true);
+                            cursor = index + token.token.length();
                         }
 
                         // Tabla de símbolos
@@ -135,6 +138,30 @@ public class IDECompilador extends JFrame {
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                }
+            }
+        });
+
+        openButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar archivo C#");
+                int result = fileChooser.showOpenDialog(null);
+
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+
+                    try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
+                        codeEditor.setText(""); // limpia el editor
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            codeEditor.getDocument().insertString(codeEditor.getDocument().getLength(), line + "\n", null);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error al leer el archivo", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         });

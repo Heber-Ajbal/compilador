@@ -2,46 +2,36 @@
 
 package View;
 
-//Java Libraries
+// Java Libraries
 import java.util.ArrayList;
 
-class Yytoken{
+class Yytoken {
     public String token;
     public int line;
     public int column;
     public int length;
     public String type;
     public boolean error;
+    public String color;
 
-    Yytoken(String token, int line, int column, String type, boolean error){
+    Yytoken(String token, int line, int column, String type, boolean error, String color) {
         this.token = token;
-        this.line = line+1;
-        this.column = column+1;
-        this.length = token.length()-1;
+        this.line = line + 1;
+        this.column = column + 1;
+        this.length = token.length() - 1;
         this.type = type;
         this.error = error;
+        this.color = color;
     }
 
-    public String toString(){
+    public String toString() {
         int aux = column + length;
-        if(this.type.equals("T_Identifier")){
-            if(token.length() > 31){
-                String temp = this.token.substring(0,31);
-                String aditional = this.token.substring(31);
-                return temp + "\t\tLine "+line+"\tcols "+column+"-"+aux+"\tis "+ type + " Number of characters greater than 31 - Discarded characters {"+aditional+"}";
-            }
-            else{
-                return token + "\t\tLine "+line+"\tcols "+column+"-"+aux+"\tis "+ type;
-            }
-        }
-        else{
-            return token + "\t\tLine "+line+"\tcols "+column+"-"+aux+"\tis "+ type;
-        }
+        return token + "\t\tLínea " + line + "\tcolumnas " + column + "-" + aux + "\tes " + type + "\tColor: " + color;
     }
 
-    public String isError(){
+    public String isError() {
         int aux = column + length;
-        return "*** Error Léxico. Linea: " +line+ " Columnas: "+column+"-"+aux+" *** Mensaje Error: " + type + " \'" + token +"\'";
+        return "*** Error Léxico. Línea: " + line + " Columnas: " + column + "-" + aux + " *** Mensaje de Error: " + type + " '" + token + "'";
     }
 }
 
@@ -76,15 +66,15 @@ public class LexicalScanner {
    * Translates characters to character classes
    */
   private static final String ZZ_CMAP_PACKED = 
-    "\11\0\1\46\1\44\1\63\1\47\1\43\22\0\1\45\1\70\1\61"+
-    "\2\0\1\64\1\71\1\0\1\73\1\74\1\51\1\65\1\102\1\57"+
-    "\1\56\1\50\1\53\11\52\1\0\1\101\1\66\1\67\1\66\2\0"+
+    "\11\0\1\46\1\44\1\63\1\47\1\43\22\0\1\45\1\65\1\61"+
+    "\2\0\1\64\1\67\1\0\1\71\1\72\1\51\1\57\1\77\1\57"+
+    "\1\56\1\50\1\53\11\52\1\0\1\77\1\65\1\66\1\65\2\0"+
     "\1\30\1\37\2\55\1\60\1\55\1\36\1\41\1\33\2\41\1\34"+
     "\1\35\1\27\1\41\1\24\1\41\1\32\1\36\4\41\1\54\2\41"+
-    "\1\75\1\62\1\76\1\0\1\42\1\0\1\22\1\7\1\21\1\4"+
+    "\1\73\1\62\1\74\1\0\1\42\1\0\1\22\1\7\1\21\1\4"+
     "\1\11\1\15\1\14\1\17\1\1\1\41\1\40\1\10\1\25\1\2"+
     "\1\5\1\26\1\41\1\13\1\12\1\3\1\6\1\20\1\16\1\23"+
-    "\1\31\1\41\1\77\1\72\1\100\7\0\1\63\u1fa2\0\1\63\1\63"+
+    "\1\31\1\41\1\75\1\70\1\76\7\0\1\63\u1fa2\0\1\63\1\63"+
     "\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udfe6\0";
 
   /** 
@@ -98,16 +88,14 @@ public class LexicalScanner {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\1\0\1\1\22\2\3\3\2\4\2\5\1\6\1\7"+
-    "\1\10\1\11\1\12\1\13\1\14\2\1\1\15\1\16"+
-    "\1\17\1\20\1\21\1\22\1\23\1\24\1\2\1\25"+
-    "\25\2\1\3\1\26\1\27\3\0\1\30\1\0\1\12"+
-    "\1\31\1\32\1\33\1\34\1\35\1\36\1\25\17\2"+
-    "\1\25\3\2\3\0\1\5\1\0\2\2\1\37\11\2"+
-    "\1\27\1\0\26\2";
+    "\1\0\1\1\22\2\3\3\2\4\2\5\1\6\1\4"+
+    "\1\1\1\4\2\1\3\6\1\2\1\7\25\2\1\10"+
+    "\1\11\1\5\3\0\1\12\1\0\1\13\20\2\1\7"+
+    "\3\2\2\10\3\0\1\5\1\0\2\2\1\5\1\2"+
+    "\1\13\11\2\1\5\1\0\27\2";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[143];
+    int [] result = new int[134];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -132,27 +120,26 @@ public class LexicalScanner {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\103\0\206\0\311\0\u010c\0\u014f\0\u0192\0\u01d5"+
-    "\0\u0218\0\u025b\0\u029e\0\u02e1\0\u0324\0\u0367\0\u03aa\0\u03ed"+
-    "\0\u0430\0\u0473\0\u04b6\0\u04f9\0\u053c\0\103\0\u057f\0\u05c2"+
-    "\0\103\0\u0605\0\u0648\0\103\0\u068b\0\u06ce\0\u068b\0\u0711"+
-    "\0\u0754\0\u0754\0\u0797\0\u07da\0\u081d\0\103\0\u0860\0\103"+
-    "\0\u08a3\0\103\0\103\0\103\0\u08e6\0\u0192\0\u0929\0\u096c"+
-    "\0\u09af\0\u09f2\0\u0a35\0\u0a78\0\u0abb\0\u0afe\0\u0b41\0\u0b84"+
-    "\0\u0bc7\0\u0c0a\0\u0c4d\0\u0c90\0\u0cd3\0\u0d16\0\u0d59\0\u0d9c"+
-    "\0\u0ddf\0\u0e22\0\u0e65\0\u0ea8\0\u0eeb\0\u0f2e\0\u0f71\0\u0fb4"+
-    "\0\u06ce\0\103\0\u0ff7\0\103\0\103\0\103\0\103\0\103"+
-    "\0\103\0\103\0\u103a\0\u107d\0\u10c0\0\u1103\0\u1146\0\u1189"+
-    "\0\u11cc\0\u120f\0\u1252\0\u1295\0\u12d8\0\u131b\0\u135e\0\u13a1"+
-    "\0\u13e4\0\u1427\0\u146a\0\u14ad\0\u14f0\0\u1533\0\u1576\0\u15b9"+
-    "\0\u15fc\0\u0f71\0\u163f\0\u1682\0\u16c5\0\u0192\0\u1708\0\u174b"+
-    "\0\u178e\0\u17d1\0\u1814\0\u1857\0\u189a\0\u18dd\0\u1920\0\u1963"+
-    "\0\u1963\0\u19a6\0\u19e9\0\u1a2c\0\u1a6f\0\u1ab2\0\u1af5\0\u1b38"+
-    "\0\u1b7b\0\u1bbe\0\u1c01\0\u1c44\0\u1c87\0\u1cca\0\u1d0d\0\u1d50"+
-    "\0\u1d93\0\u1dd6\0\u1e19\0\u1e5c\0\u1e9f\0\u1ee2\0\u1f25";
+    "\0\0\0\100\0\200\0\300\0\u0100\0\u0140\0\u0180\0\u01c0"+
+    "\0\u0200\0\u0240\0\u0280\0\u02c0\0\u0300\0\u0340\0\u0380\0\u03c0"+
+    "\0\u0400\0\u0440\0\u0480\0\u04c0\0\u0500\0\100\0\u0540\0\u0580"+
+    "\0\100\0\u05c0\0\u0600\0\100\0\u0640\0\u0680\0\u06c0\0\u0700"+
+    "\0\u0740\0\u0780\0\u07c0\0\u0800\0\u0840\0\u0180\0\u0880\0\u08c0"+
+    "\0\u0900\0\u0940\0\u0980\0\u09c0\0\u0a00\0\u0a40\0\u0a80\0\u0ac0"+
+    "\0\u0b00\0\u0b40\0\u0b80\0\u0bc0\0\u0c00\0\u0c40\0\u0c80\0\u0cc0"+
+    "\0\u0d00\0\u0d40\0\u0d80\0\u0dc0\0\u0e00\0\u0e40\0\u0e80\0\u0ec0"+
+    "\0\u0680\0\100\0\u0f00\0\u0f40\0\u0f80\0\u0fc0\0\u1000\0\u1040"+
+    "\0\u1080\0\u10c0\0\u1100\0\u1140\0\u1180\0\u11c0\0\u1200\0\u1240"+
+    "\0\u1280\0\u12c0\0\u1300\0\u1340\0\u1380\0\u13c0\0\u1400\0\u1440"+
+    "\0\u1480\0\100\0\u14c0\0\u1500\0\u1540\0\u0e80\0\u1580\0\u15c0"+
+    "\0\u1600\0\u0180\0\u1640\0\u0180\0\u1680\0\u16c0\0\u1700\0\u1740"+
+    "\0\u1780\0\u17c0\0\u1800\0\u1840\0\u1880\0\u18c0\0\u18c0\0\u1900"+
+    "\0\u1940\0\u1980\0\u19c0\0\u1a00\0\u1a40\0\u1a80\0\u1ac0\0\u1b00"+
+    "\0\u1b40\0\u1b80\0\u1bc0\0\u1c00\0\u1c40\0\u1c80\0\u1cc0\0\u1d00"+
+    "\0\u1d40\0\u1d80\0\u1dc0\0\u1e00\0\u1e40\0\u1e80";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[143];
+    int [] result = new int[134];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -180,119 +167,121 @@ public class LexicalScanner {
     "\1\17\2\7\1\20\2\7\1\21\2\7\1\22\2\7"+
     "\1\23\1\24\3\7\1\2\1\25\2\26\1\27\1\0"+
     "\1\30\1\31\1\32\1\33\2\7\1\34\1\35\1\7"+
-    "\1\36\1\2\1\0\1\31\1\37\1\40\1\41\1\42"+
-    "\1\43\1\44\1\45\1\46\1\47\1\50\1\51\1\52"+
-    "\1\53\1\54\104\0\1\7\1\55\12\7\1\56\7\7"+
-    "\1\57\15\7\7\0\4\7\2\0\1\7\23\0\5\7"+
-    "\1\60\34\7\7\0\4\7\2\0\1\7\23\0\12\7"+
-    "\1\61\3\7\1\62\23\7\7\0\4\7\2\0\1\7"+
-    "\23\0\4\7\1\63\35\7\7\0\4\7\2\0\1\7"+
-    "\23\0\42\7\7\0\4\7\2\0\1\7\23\0\4\7"+
-    "\1\64\5\7\1\65\27\7\7\0\4\7\2\0\1\7"+
-    "\23\0\7\7\1\66\12\7\1\67\17\7\7\0\4\7"+
-    "\2\0\1\7\23\0\2\7\1\70\37\7\7\0\4\7"+
-    "\2\0\1\7\23\0\10\7\1\71\31\7\7\0\4\7"+
-    "\2\0\1\7\23\0\4\7\1\72\14\7\1\73\20\7"+
-    "\7\0\4\7\2\0\1\7\23\0\16\7\1\74\23\7"+
-    "\7\0\4\7\2\0\1\7\23\0\4\7\1\75\35\7"+
-    "\7\0\4\7\2\0\1\7\23\0\7\7\1\76\32\7"+
-    "\7\0\4\7\2\0\1\7\23\0\12\7\1\77\27\7"+
-    "\7\0\4\7\2\0\1\7\23\0\10\7\1\100\31\7"+
-    "\7\0\4\7\2\0\1\7\23\0\10\7\1\101\31\7"+
-    "\7\0\4\7\2\0\1\7\23\0\21\7\1\102\20\7"+
-    "\7\0\4\7\2\0\1\7\23\0\10\7\1\103\31\7"+
-    "\7\0\4\7\2\0\1\7\66\0\1\26\105\0\1\26"+
-    "\103\0\1\104\1\105\103\0\2\32\2\0\1\106\47\0"+
-    "\1\107\26\0\2\32\1\107\1\0\1\106\76\0\2\110"+
-    "\27\0\44\111\1\0\14\111\1\112\1\113\20\111\67\0"+
-    "\1\114\102\0\1\115\104\0\1\116\103\0\1\117\104\0"+
-    "\1\120\104\0\1\121\104\0\1\122\3\0\2\7\1\123"+
-    "\37\7\7\0\4\7\2\0\1\7\23\0\25\7\1\124"+
-    "\14\7\7\0\4\7\2\0\1\7\23\0\7\7\1\125"+
-    "\32\7\7\0\4\7\2\0\1\7\23\0\5\7\1\126"+
-    "\34\7\7\0\4\7\2\0\1\7\23\0\1\127\41\7"+
-    "\7\0\4\7\2\0\1\7\23\0\5\7\1\130\34\7"+
-    "\7\0\4\7\2\0\1\7\23\0\4\7\1\125\35\7"+
-    "\7\0\4\7\2\0\1\7\23\0\10\7\1\131\31\7"+
-    "\7\0\4\7\2\0\1\7\23\0\11\7\1\132\30\7"+
-    "\7\0\4\7\2\0\1\7\23\0\2\7\1\133\37\7"+
-    "\7\0\4\7\2\0\1\7\23\0\12\7\1\134\27\7"+
-    "\7\0\4\7\2\0\1\7\23\0\2\7\1\135\37\7"+
-    "\7\0\4\7\2\0\1\7\23\0\12\7\1\56\27\7"+
-    "\7\0\4\7\2\0\1\7\23\0\7\7\1\136\32\7"+
-    "\7\0\4\7\2\0\1\7\23\0\1\137\41\7\7\0"+
-    "\4\7\2\0\1\7\23\0\1\140\41\7\7\0\4\7"+
-    "\2\0\1\7\23\0\21\7\1\141\20\7\7\0\4\7"+
-    "\2\0\1\7\23\0\1\142\41\7\7\0\4\7\2\0"+
-    "\1\7\23\0\15\7\1\143\24\7\7\0\4\7\2\0"+
-    "\1\7\23\0\21\7\1\144\20\7\7\0\4\7\2\0"+
-    "\1\7\23\0\7\7\1\145\32\7\7\0\4\7\2\0"+
-    "\1\7\23\0\2\7\1\146\37\7\7\0\4\7\2\0"+
-    "\1\7\22\0\43\104\1\25\1\26\36\104\50\105\1\147"+
-    "\1\150\31\105\11\0\1\151\40\0\2\106\4\0\1\151"+
-    "\26\0\1\152\2\0\1\152\1\0\1\152\3\0\1\152"+
-    "\3\0\2\152\5\0\1\152\6\0\1\152\12\0\2\152"+
-    "\1\0\1\152\2\0\1\152\74\0\2\110\2\0\1\153"+
-    "\24\0\43\111\2\0\2\111\1\0\13\111\1\0\17\111"+
-    "\1\0\10\7\1\154\31\7\7\0\4\7\2\0\1\7"+
-    "\23\0\7\7\1\155\32\7\7\0\4\7\2\0\1\7"+
-    "\23\0\7\7\1\56\32\7\7\0\4\7\2\0\1\7"+
-    "\23\0\10\7\1\156\31\7\7\0\4\7\2\0\1\7"+
-    "\23\0\11\7\1\56\30\7\7\0\4\7\2\0\1\7"+
-    "\23\0\6\7\1\137\33\7\7\0\4\7\2\0\1\7"+
-    "\23\0\21\7\1\157\20\7\7\0\4\7\2\0\1\7"+
-    "\23\0\10\7\1\56\31\7\7\0\4\7\2\0\1\7"+
-    "\23\0\10\7\1\160\31\7\7\0\4\7\2\0\1\7"+
-    "\23\0\1\161\41\7\7\0\4\7\2\0\1\7\23\0"+
-    "\5\7\1\162\34\7\7\0\4\7\2\0\1\7\23\0"+
-    "\11\7\1\126\30\7\7\0\4\7\2\0\1\7\23\0"+
-    "\7\7\1\132\32\7\7\0\4\7\2\0\1\7\23\0"+
-    "\3\7\1\56\36\7\7\0\4\7\2\0\1\7\23\0"+
-    "\11\7\1\127\30\7\7\0\4\7\2\0\1\7\23\0"+
-    "\1\7\1\163\40\7\7\0\4\7\2\0\1\7\23\0"+
-    "\27\7\1\164\12\7\7\0\4\7\2\0\1\7\23\0"+
-    "\3\7\1\165\36\7\7\0\4\7\2\0\1\7\23\0"+
-    "\7\7\1\166\32\7\7\0\4\7\2\0\1\7\23\0"+
-    "\36\7\1\167\3\7\7\0\4\7\2\0\1\7\22\0"+
-    "\51\147\1\150\101\147\1\26\1\150\31\147\52\0\2\170"+
-    "\3\0\1\171\5\0\1\171\26\0\1\151\40\0\2\153"+
-    "\4\0\1\151\23\0\12\7\1\172\27\7\7\0\4\7"+
-    "\2\0\1\7\23\0\10\7\1\173\31\7\7\0\4\7"+
-    "\2\0\1\7\23\0\37\7\1\56\2\7\7\0\4\7"+
-    "\2\0\1\7\23\0\1\7\1\174\40\7\7\0\4\7"+
-    "\2\0\1\7\23\0\1\7\1\175\40\7\7\0\4\7"+
-    "\2\0\1\7\23\0\12\7\1\176\27\7\7\0\4\7"+
-    "\2\0\1\7\23\0\2\7\1\56\37\7\7\0\4\7"+
-    "\2\0\1\7\23\0\12\7\1\177\27\7\7\0\4\7"+
-    "\2\0\1\7\23\0\32\7\1\200\1\201\6\7\7\0"+
-    "\4\7\2\0\1\7\23\0\4\7\1\202\35\7\7\0"+
-    "\4\7\2\0\1\7\23\0\30\7\1\203\11\7\7\0"+
-    "\4\7\2\0\1\7\74\0\2\170\30\0\14\7\1\204"+
-    "\25\7\7\0\4\7\2\0\1\7\23\0\24\7\1\205"+
-    "\15\7\7\0\4\7\2\0\1\7\23\0\3\7\1\127"+
-    "\36\7\7\0\4\7\2\0\1\7\23\0\13\7\1\56"+
-    "\26\7\7\0\4\7\2\0\1\7\23\0\1\7\1\56"+
-    "\40\7\7\0\4\7\2\0\1\7\23\0\12\7\1\206"+
-    "\27\7\7\0\4\7\2\0\1\7\23\0\1\7\1\207"+
-    "\40\7\7\0\4\7\2\0\1\7\23\0\1\210\41\7"+
-    "\7\0\4\7\2\0\1\7\23\0\20\7\1\56\21\7"+
-    "\7\0\4\7\2\0\1\7\23\0\2\7\1\132\37\7"+
-    "\7\0\4\7\2\0\1\7\23\0\21\7\1\211\20\7"+
-    "\7\0\4\7\2\0\1\7\23\0\10\7\1\212\31\7"+
-    "\7\0\4\7\2\0\1\7\23\0\21\7\1\213\20\7"+
-    "\7\0\4\7\2\0\1\7\23\0\2\7\1\214\37\7"+
-    "\7\0\4\7\2\0\1\7\23\0\1\7\1\132\40\7"+
-    "\7\0\4\7\2\0\1\7\23\0\20\7\1\132\21\7"+
-    "\7\0\4\7\2\0\1\7\23\0\1\7\1\215\40\7"+
-    "\7\0\4\7\2\0\1\7\23\0\30\7\1\56\11\7"+
-    "\7\0\4\7\2\0\1\7\23\0\10\7\1\216\31\7"+
-    "\7\0\4\7\2\0\1\7\23\0\2\7\1\127\37\7"+
-    "\7\0\4\7\2\0\1\7\23\0\13\7\1\217\26\7"+
-    "\7\0\4\7\2\0\1\7\23\0\10\7\1\72\31\7"+
-    "\7\0\4\7\2\0\1\7\22\0";
+    "\1\36\1\2\1\0\1\31\2\37\1\40\1\41\1\42"+
+    "\1\34\1\43\1\34\1\44\2\34\101\0\1\7\1\45"+
+    "\12\7\1\46\7\7\1\47\15\7\7\0\4\7\2\0"+
+    "\1\7\20\0\5\7\1\50\34\7\7\0\4\7\2\0"+
+    "\1\7\20\0\12\7\1\51\3\7\1\52\23\7\7\0"+
+    "\4\7\2\0\1\7\20\0\4\7\1\53\35\7\7\0"+
+    "\4\7\2\0\1\7\20\0\42\7\7\0\4\7\2\0"+
+    "\1\7\20\0\4\7\1\54\5\7\1\55\27\7\7\0"+
+    "\4\7\2\0\1\7\20\0\7\7\1\56\12\7\1\57"+
+    "\17\7\7\0\4\7\2\0\1\7\20\0\2\7\1\60"+
+    "\37\7\7\0\4\7\2\0\1\7\20\0\10\7\1\61"+
+    "\31\7\7\0\4\7\2\0\1\7\20\0\4\7\1\62"+
+    "\14\7\1\63\20\7\7\0\4\7\2\0\1\7\20\0"+
+    "\16\7\1\64\23\7\7\0\4\7\2\0\1\7\20\0"+
+    "\4\7\1\65\35\7\7\0\4\7\2\0\1\7\20\0"+
+    "\7\7\1\66\32\7\7\0\4\7\2\0\1\7\20\0"+
+    "\12\7\1\67\27\7\7\0\4\7\2\0\1\7\20\0"+
+    "\10\7\1\70\31\7\7\0\4\7\2\0\1\7\20\0"+
+    "\10\7\1\71\31\7\7\0\4\7\2\0\1\7\20\0"+
+    "\21\7\1\72\20\7\7\0\4\7\2\0\1\7\20\0"+
+    "\10\7\1\73\31\7\7\0\4\7\2\0\1\7\63\0"+
+    "\1\26\102\0\1\26\100\0\1\74\1\75\100\0\2\32"+
+    "\2\0\1\76\44\0\1\77\26\0\2\32\1\77\1\0"+
+    "\1\76\73\0\2\100\24\0\44\101\1\0\14\101\1\102"+
+    "\1\103\15\101\66\0\1\31\100\0\1\31\100\0\1\31"+
+    "\101\0\1\34\101\0\1\34\101\0\1\34\2\0\2\7"+
+    "\1\104\37\7\7\0\4\7\2\0\1\7\20\0\25\7"+
+    "\1\105\14\7\7\0\4\7\2\0\1\7\20\0\7\7"+
+    "\1\106\32\7\7\0\4\7\2\0\1\7\20\0\5\7"+
+    "\1\107\34\7\7\0\4\7\2\0\1\7\20\0\1\110"+
+    "\41\7\7\0\4\7\2\0\1\7\20\0\5\7\1\111"+
+    "\34\7\7\0\4\7\2\0\1\7\20\0\4\7\1\112"+
+    "\35\7\7\0\4\7\2\0\1\7\20\0\10\7\1\113"+
+    "\31\7\7\0\4\7\2\0\1\7\20\0\11\7\1\114"+
+    "\30\7\7\0\4\7\2\0\1\7\20\0\2\7\1\115"+
+    "\37\7\7\0\4\7\2\0\1\7\20\0\12\7\1\116"+
+    "\27\7\7\0\4\7\2\0\1\7\20\0\2\7\1\117"+
+    "\37\7\7\0\4\7\2\0\1\7\20\0\12\7\1\46"+
+    "\27\7\7\0\4\7\2\0\1\7\20\0\7\7\1\120"+
+    "\32\7\7\0\4\7\2\0\1\7\20\0\1\121\41\7"+
+    "\7\0\4\7\2\0\1\7\20\0\1\122\41\7\7\0"+
+    "\4\7\2\0\1\7\20\0\21\7\1\123\20\7\7\0"+
+    "\4\7\2\0\1\7\20\0\1\124\41\7\7\0\4\7"+
+    "\2\0\1\7\20\0\15\7\1\125\24\7\7\0\4\7"+
+    "\2\0\1\7\20\0\21\7\1\126\20\7\7\0\4\7"+
+    "\2\0\1\7\20\0\7\7\1\127\32\7\7\0\4\7"+
+    "\2\0\1\7\20\0\2\7\1\130\37\7\7\0\4\7"+
+    "\2\0\1\7\17\0\43\74\1\131\1\132\33\74\50\75"+
+    "\1\133\1\134\26\75\11\0\1\135\40\0\2\76\4\0"+
+    "\1\135\23\0\1\136\2\0\1\136\1\0\1\136\3\0"+
+    "\1\136\3\0\2\136\5\0\1\136\6\0\1\136\12\0"+
+    "\2\136\1\0\1\136\2\0\1\136\71\0\2\100\2\0"+
+    "\1\137\21\0\43\101\2\0\2\101\1\0\13\101\1\0"+
+    "\14\101\1\0\10\7\1\140\31\7\7\0\4\7\2\0"+
+    "\1\7\20\0\7\7\1\141\32\7\7\0\4\7\2\0"+
+    "\1\7\20\0\7\7\1\46\32\7\7\0\4\7\2\0"+
+    "\1\7\20\0\10\7\1\142\31\7\7\0\4\7\2\0"+
+    "\1\7\20\0\11\7\1\46\30\7\7\0\4\7\2\0"+
+    "\1\7\20\0\6\7\1\143\33\7\7\0\4\7\2\0"+
+    "\1\7\20\0\7\7\1\144\32\7\7\0\4\7\2\0"+
+    "\1\7\20\0\21\7\1\145\20\7\7\0\4\7\2\0"+
+    "\1\7\20\0\10\7\1\46\31\7\7\0\4\7\2\0"+
+    "\1\7\20\0\10\7\1\146\31\7\7\0\4\7\2\0"+
+    "\1\7\20\0\1\147\41\7\7\0\4\7\2\0\1\7"+
+    "\20\0\5\7\1\150\34\7\7\0\4\7\2\0\1\7"+
+    "\20\0\11\7\1\107\30\7\7\0\4\7\2\0\1\7"+
+    "\20\0\7\7\1\114\32\7\7\0\4\7\2\0\1\7"+
+    "\20\0\3\7\1\144\36\7\7\0\4\7\2\0\1\7"+
+    "\20\0\11\7\1\110\30\7\7\0\4\7\2\0\1\7"+
+    "\20\0\1\7\1\151\40\7\7\0\4\7\2\0\1\7"+
+    "\20\0\27\7\1\152\12\7\7\0\4\7\2\0\1\7"+
+    "\20\0\3\7\1\153\36\7\7\0\4\7\2\0\1\7"+
+    "\20\0\7\7\1\154\32\7\7\0\4\7\2\0\1\7"+
+    "\20\0\36\7\1\155\3\7\7\0\4\7\2\0\1\7"+
+    "\63\0\1\132\33\0\51\133\1\134\76\133\1\132\1\134"+
+    "\26\133\52\0\2\156\3\0\1\157\31\0\1\135\40\0"+
+    "\2\137\4\0\1\135\20\0\12\7\1\160\27\7\7\0"+
+    "\4\7\2\0\1\7\20\0\10\7\1\161\31\7\7\0"+
+    "\4\7\2\0\1\7\20\0\7\7\1\162\32\7\7\0"+
+    "\4\7\2\0\1\7\20\0\37\7\1\46\2\7\7\0"+
+    "\4\7\2\0\1\7\20\0\1\7\1\163\40\7\7\0"+
+    "\4\7\2\0\1\7\20\0\1\7\1\164\40\7\7\0"+
+    "\4\7\2\0\1\7\20\0\12\7\1\165\27\7\7\0"+
+    "\4\7\2\0\1\7\20\0\2\7\1\46\37\7\7\0"+
+    "\4\7\2\0\1\7\20\0\12\7\1\166\27\7\7\0"+
+    "\4\7\2\0\1\7\20\0\32\7\1\167\1\170\6\7"+
+    "\7\0\4\7\2\0\1\7\20\0\4\7\1\171\35\7"+
+    "\7\0\4\7\2\0\1\7\20\0\30\7\1\172\11\7"+
+    "\7\0\4\7\2\0\1\7\71\0\2\156\25\0\14\7"+
+    "\1\173\25\7\7\0\4\7\2\0\1\7\20\0\24\7"+
+    "\1\174\15\7\7\0\4\7\2\0\1\7\20\0\10\7"+
+    "\1\144\31\7\7\0\4\7\2\0\1\7\20\0\3\7"+
+    "\1\110\36\7\7\0\4\7\2\0\1\7\20\0\13\7"+
+    "\1\144\26\7\7\0\4\7\2\0\1\7\20\0\1\7"+
+    "\1\46\40\7\7\0\4\7\2\0\1\7\20\0\12\7"+
+    "\1\175\27\7\7\0\4\7\2\0\1\7\20\0\1\7"+
+    "\1\176\40\7\7\0\4\7\2\0\1\7\20\0\1\177"+
+    "\41\7\7\0\4\7\2\0\1\7\20\0\20\7\1\46"+
+    "\21\7\7\0\4\7\2\0\1\7\20\0\2\7\1\114"+
+    "\37\7\7\0\4\7\2\0\1\7\20\0\21\7\1\200"+
+    "\20\7\7\0\4\7\2\0\1\7\20\0\10\7\1\201"+
+    "\31\7\7\0\4\7\2\0\1\7\20\0\21\7\1\202"+
+    "\20\7\7\0\4\7\2\0\1\7\20\0\2\7\1\203"+
+    "\37\7\7\0\4\7\2\0\1\7\20\0\1\7\1\114"+
+    "\40\7\7\0\4\7\2\0\1\7\20\0\20\7\1\114"+
+    "\21\7\7\0\4\7\2\0\1\7\20\0\1\7\1\204"+
+    "\40\7\7\0\4\7\2\0\1\7\20\0\30\7\1\46"+
+    "\11\7\7\0\4\7\2\0\1\7\20\0\10\7\1\205"+
+    "\31\7\7\0\4\7\2\0\1\7\20\0\2\7\1\110"+
+    "\37\7\7\0\4\7\2\0\1\7\20\0\13\7\1\206"+
+    "\26\7\7\0\4\7\2\0\1\7\20\0\10\7\1\62"+
+    "\31\7\7\0\4\7\2\0\1\7\17\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[8040];
+    int [] result = new int[7872];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -331,12 +320,11 @@ public class LexicalScanner {
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
     "\1\0\1\11\23\1\1\11\2\1\1\11\2\1\1\11"+
-    "\11\1\1\11\1\1\1\11\1\1\3\11\32\1\3\0"+
-    "\1\11\1\0\7\11\24\1\3\0\1\1\1\0\15\1"+
-    "\1\0\26\1";
+    "\42\1\3\0\1\11\1\0\26\1\1\11\3\0\1\1"+
+    "\1\0\17\1\1\0\27\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[143];
+    int [] result = new int[134];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -412,21 +400,21 @@ public class LexicalScanner {
   private int zzFinalHighSurrogate = 0;
 
   /* user code: */
-public ArrayList<Yytoken> tokens; /* our variable for storing token's info that will be the output */
+public ArrayList<Yytoken> tokens;
 
-    private String typeReservedWords(String text) {
-        return  text.substring(0, 1).toUpperCase() + text.substring(1);
+    private String getColorForType(String tipo) {
+        return switch (tipo.toLowerCase()) {
+            case "palabra reservada" -> "#8A2BE2";
+            case "tipo de dato" -> "#0000FF";
+            case "identificador" -> "#FFFFFF";
+            case "número" -> "#FF8C00";
+            case "cadena" -> "#008000";
+            case "operador" -> "#FF0000";
+            case "signo de puntuación" -> "#00CED1";
+            case "error" -> "#FF1493";
+            default -> "#AAAAAA";
+        };
     }
-
-    private String typeNumbers(String text, String type) {
-        return type + " (value = " + text + ")";
-    }
-
-    private String isError(String token, int line, int column, int length, String error) {
-        int aux = column + length;
-        return "*** Line " + line + " *** Cols " + column + "-" + aux + " *** " + error + " \'" + token + "\'";
-    }
-
 
 
   /**
@@ -803,129 +791,59 @@ public ArrayList<Yytoken> tokens; /* our variable for storing token's info that 
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Carácter no reconocido", true));
+            { String tipo = "error";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, true, getColorForType(tipo)));
             }
-          case 32: break;
+          case 12: break;
           case 2: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Identificador", false));
+            { String tipo = "identificador";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
             }
-          case 33: break;
+          case 13: break;
           case 3: 
             { /* ignorar */
             }
-          case 34: break;
+          case 14: break;
           case 4: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador Aritmético", false));
+            { String tipo = "operador";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
             }
-          case 35: break;
+          case 15: break;
           case 5: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeNumbers(yytext(), "Constante Entera"), false));
+            { String tipo = "número";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
             }
-          case 36: break;
+          case 16: break;
           case 6: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Punto", false));
+            { String tipo = "signo de puntuación";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
             }
-          case 37: break;
+          case 17: break;
           case 7: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador Negativo", false));
+            { String tipo = "palabra reservada";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
             }
-          case 38: break;
+          case 18: break;
           case 8: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "caracter desconocido", true)); /* It's error so it doesn't return nothing */
+            { String tipo = "comentario";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
             }
-          case 39: break;
+          case 19: break;
           case 9: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Suma", false));
+            { String tipo = "error";
+    this.tokens.add(new Yytoken("", yyline, yycolumn, "No se encontró el carácter '*/'", true, getColorForType(tipo)));
             }
-          case 40: break;
+          case 20: break;
           case 10: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Comparación", false));
+            { String tipo = "cadena";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
             }
-          case 41: break;
+          case 21: break;
           case 11: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Asignación", false));
+            { String tipo = "tipo de dato";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
             }
-          case 42: break;
-          case 12: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Negación", false));
-            }
-          case 43: break;
-          case 13: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Paréntesis Abierto", false));
-            }
-          case 44: break;
-          case 14: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Paréntesis Cerrado", false));
-            }
-          case 45: break;
-          case 15: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Corchete Abierto", false));
-            }
-          case 46: break;
-          case 16: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Corchete Cerrado", false));
-            }
-          case 47: break;
-          case 17: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Llave Abierta", false));
-            }
-          case 48: break;
-          case 18: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Llave Cerrada", false));
-            }
-          case 49: break;
-          case 19: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Punto y Coma", false));
-            }
-          case 50: break;
-          case 20: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Coma", false));
-            }
-          case 51: break;
-          case 21: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));
-            }
-          case 52: break;
-          case 22: 
-            { this.tokens.add(new Yytoken("", yyline, yycolumn, "No se encontró el carácter '*/'", true));
-            }
-          case 53: break;
-          case 23: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeNumbers(yytext(), "Constante Decimal"), false));
-            }
-          case 54: break;
-          case 24: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Cadena", false));
-            }
-          case 55: break;
-          case 25: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Igualdad", false));
-            }
-          case 56: break;
-          case 26: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador Lógico AND", false));
-            }
-          case 57: break;
-          case 27: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador Lógico OR", false));
-            }
-          case 58: break;
-          case 28: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Paréntesis", false));
-            }
-          case 59: break;
-          case 29: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Corchetes", false));
-            }
-          case 60: break;
-          case 30: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Llaves", false));
-            }
-          case 61: break;
-          case 31: 
-            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Constante Lógica", false));
-            }
-          case 62: break;
+          case 22: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }

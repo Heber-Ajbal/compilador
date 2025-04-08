@@ -1,50 +1,39 @@
 package analyzer;
 
-//Java Libraries
+// Java Libraries
 import java.util.ArrayList;
 
-class Yytoken{
+class Yytoken {
     public String token;
     public int line;
     public int column;
     public int length;
     public String type;
     public boolean error;
+    public String color;
 
-    Yytoken(String token, int line, int column, String type, boolean error){
+    Yytoken(String token, int line, int column, String type, boolean error, String color) {
         this.token = token;
-        this.line = line+1;
-        this.column = column+1;
-        this.length = token.length()-1;
+        this.line = line + 1;
+        this.column = column + 1;
+        this.length = token.length() - 1;
         this.type = type;
         this.error = error;
+        this.color = color;
     }
 
-    public String toString(){
+    public String toString() {
         int aux = column + length;
-        if(this.type.equals("T_Identifier")){
-            if(token.length() > 31){
-                String temp = this.token.substring(0,31);
-                String aditional = this.token.substring(31);
-                return temp + "\t\tLine "+line+"\tcols "+column+"-"+aux+"\tis "+ type + " Number of characters greater than 31 - Discarded characters {"+aditional+"}";
-            }
-            else{
-                return token + "\t\tLine "+line+"\tcols "+column+"-"+aux+"\tis "+ type;
-            }
-        }
-        else{
-            return token + "\t\tLine "+line+"\tcols "+column+"-"+aux+"\tis "+ type;
-        }
+        return token + "\t\tLínea " + line + "\tcolumnas " + column + "-" + aux + "\tes " + type + "\tColor: " + color;
     }
 
-    public String isError(){
+    public String isError() {
         int aux = column + length;
-        return "*** Error Léxico. Linea: " +line+ " Columnas: "+column+"-"+aux+" *** Mensaje Error: " + type + " \'" + token +"\'";
+        return "*** Error Léxico. Línea: " + line + " Columnas: " + column + "-" + aux + " *** Mensaje de Error: " + type + " '" + token + "'";
     }
 }
 
 %%
-/* Options and declarations */
 %class LexicalScanner
 %public
 %unicode
@@ -52,33 +41,29 @@ class Yytoken{
 %line
 %column
 
-/* Java code */
-
 %init{
 this.tokens = new ArrayList<Yytoken>();
 %init}
 
 %{
-public ArrayList<Yytoken> tokens; /* our variable for storing token's info that will be the output */
+public ArrayList<Yytoken> tokens;
 
-    private String typeReservedWords(String text) {
-        return  text.substring(0, 1).toUpperCase() + text.substring(1);
+    private String getColorForType(String tipo) {
+        return switch (tipo.toLowerCase()) {
+            case "palabra reservada" -> "#8A2BE2";
+            case "tipo de dato" -> "#0000FF";
+            case "identificador" -> "#FFFFFF";
+            case "número" -> "#FF8C00";
+            case "cadena" -> "#008000";
+            case "operador" -> "#FF0000";
+            case "signo de puntuación" -> "#00CED1";
+            case "error" -> "#FF1493";
+            default -> "#AAAAAA";
+        };
     }
-
-    private String typeNumbers(String text, String type) {
-        return type + " (value = " + text + ")";
-    }
-
-    private String isError(String token, int line, int column, int length, String error) {
-        int aux = column + length;
-        return "*** Line " + line + " *** Cols " + column + "-" + aux + " *** " + error + " \'" + token + "\'";
-    }
-
 %}
 
-/*Macro Definition*/
-
-/* Reserved words */
+/* Definiciones de macros */
 Int = ("int")
 Double = ("double")
 Bool = ("bool")
@@ -105,45 +90,26 @@ SetByte = ("SetByte")
 Return = ("return")
 Break = ("break")
 
-/* Identifiers */
 Identifiers = [a-zA-Z]([a-zA-Z0-9_])*
-
-/* White spaces */
 LineTerminator = (\r)|(\n)|(\r\n)
-Space          = (" ")|(\t)|(\t\f)
-
-WhiteSpace     = {LineTerminator}|{Space}
-
-/* Comments */
-InputCharacter   = [^\r\n]
-
+Space = (" ")|(\t)|(\t\f)
+WhiteSpace = {LineTerminator}|{Space}
+InputCharacter = [^\r\n]
 MultiLineComment = ("/*"~"*/")
-MultiLineCommentError = ("/*")([^"*/"])*
+MultiLineCommentError = ("/*")[^"*/"]*
 LineComment = ("//"){InputCharacter}*{LineTerminator}?
-
 Comments = {MultiLineComment} | {LineComment}
-
-/* Constants */
 LogicalConstants = ("true")|("false")
-
-// Integer Constants
-DecimalNumbers     = [0-9]+
+DecimalNumbers = [0-9]+
 HexadecimalNumbers = "0"[xX][0-9a-fA-F]+
-
-IntegerConstants   = {DecimalNumbers} | {HexadecimalNumbers}
-
-// Double Constants
+IntegerConstants = {DecimalNumbers} | {HexadecimalNumbers}
 Digits = [0-9]+
 FloatNumbers = ({Digits})([\.])([0-9]*)
-ExponentialNumbers = ([+-]?)({FloatNumbers})([eE][+-]?)({Digits})
-
+ExponentialNumbers = ([+-]?){FloatNumbers}([eE][+-]?){Digits}
 DoubleConstants = {FloatNumbers} | {ExponentialNumbers}
-
-// Strings Constants
 StringConstants = (\"([^\n\\\"]|\\.)*\")
 UnrecognizedCharacters = (\")
 
-// Operators
 ArithmeticOperators = ("*")|("/")|("%")
 SumOperator = ("+")
 NegativeOperator = ("-")
@@ -154,7 +120,6 @@ LogicalOr = ("||")
 AssignmentOperator = ("=")
 DenialOperator = ("!")
 
-// Punctuation characters
 OpeningParenthesis = ("(")
 ClosedParenthesis = (")")
 Parenthesis = ("()")
@@ -166,73 +131,62 @@ ClosedCurlyBracket = ("}")
 CurlyBrackets = ("{}")
 Semicolon = (";")
 Comma = (",")
-Dot= (".")
+Dot = (".")
 
 %%
+{UnrecognizedCharacters} {
+    String tipo = "error";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, true, getColorForType(tipo)));
+}
 
-/*  Lexical rules    */
+{Int}|{Double}|{Bool}|{String}|{Void} {
+    String tipo = "tipo de dato";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
+}
 
-{UnrecognizedCharacters}    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "caracter desconocido", true)); /* It's error so it doesn't return nothing */}
-/*  Reserved Words  */
-{Int} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Double} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Bool} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{String} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Null} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{For} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{While} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{If} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Else} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Void} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Class} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Interface} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Extends} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{This} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Print} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Implements} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{NewArray} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{New} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{ReadInteger} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{ReadLine} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Malloc} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{GetByte} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{SetByte} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Return} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-{Break} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false));}
-/*  Constants   */
-/* Constants */
-{LogicalConstants} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Constante Lógica", false));}
-{IntegerConstants} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeNumbers(yytext(), "Constante Entera"), false));}
-{DoubleConstants} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeNumbers(yytext(), "Constante Decimal"), false));}
-{StringConstants} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Cadena", false));}
-/* Operadores */
-{ArithmeticOperators} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador Aritmético", false));}
-{SumOperator} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Suma", false));}
-{NegativeOperator} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador Negativo", false));}
-{ComparisonOperators} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Comparación", false));}
-{EqualityOperators} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Igualdad", false));}
-{LogicalAnd} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador Lógico AND", false));}
-{LogicalOr} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador Lógico OR", false));}
-{AssignmentOperator} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Asignación", false));}
-{DenialOperator} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Operador de Negación", false));}
-/* Puntuación */
-{OpeningParenthesis} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Paréntesis Abierto", false));}
-{ClosedParenthesis} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Paréntesis Cerrado", false));}
-{Parenthesis} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Paréntesis", false));}
-{OpeningBracket} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Corchete Abierto", false));}
-{ClosedBracket} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Corchete Cerrado", false));}
-{Brackets} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Corchetes", false));}
-{OpeningCurlyBracket} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Llave Abierta", false));}
-{ClosedCurlyBracket} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Llave Cerrada", false));}
-{CurlyBrackets} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Llaves", false));}
-{Semicolon} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Punto y Coma", false));}
-{Comma} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Coma", false));}
-{Dot} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Punto", false));}
-/* Identificadores */
-{Identifiers} {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Identificador", false));}
-{WhiteSpace} { /* ignorar */ }
-{Comments} { /* ignorar */ }
+{If}|{Else}|{For}|{While}|{Return}|{Break}|{Null}|{Class}|{Interface}|{Extends}|{This}|{Print}|{Implements}|{NewArray}|{New}|{ReadInteger}|{ReadLine}|{Malloc}|{GetByte}|{SetByte} {
+    String tipo = "palabra reservada";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
+}
 
-/* Errores */
-. {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Carácter no reconocido", true));}
-{MultiLineCommentError} {this.tokens.add(new Yytoken("", yyline, yycolumn, "No se encontró el carácter '*/'", true));}
+{LogicalConstants} | {IntegerConstants} | {DoubleConstants} {
+    String tipo = "número";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
+}
+
+{StringConstants} {
+    String tipo = "cadena";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
+}
+
+{ArithmeticOperators}|{SumOperator}|{NegativeOperator}|{ComparisonOperators}|{EqualityOperators}|{LogicalAnd}|{LogicalOr}|{AssignmentOperator}|{DenialOperator} {
+    String tipo = "operador";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
+}
+
+{OpeningParenthesis}|{ClosedParenthesis}|{Parenthesis}|{OpeningBracket}|{ClosedBracket}|{Brackets}|{OpeningCurlyBracket}|{ClosedCurlyBracket}|{CurlyBrackets}|{Semicolon}|{Comma}|{Dot} {
+    String tipo = "signo de puntuación";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
+}
+
+{Identifiers} {
+    String tipo = "identificador";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
+}
+
+{WhiteSpace} {/* ignorar */}
+
+{Comments} {
+    String tipo = "comentario";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
+}
+
+{MultiLineCommentError} {
+    String tipo = "error";
+    this.tokens.add(new Yytoken("", yyline, yycolumn, "No se encontró el carácter '*/'", true, getColorForType(tipo)));
+}
+
+. {
+    String tipo = "error";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, true, getColorForType(tipo)));
+}
