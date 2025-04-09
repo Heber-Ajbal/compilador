@@ -50,13 +50,13 @@ public ArrayList<Yytoken> tokens;
 
     private String getColorForType(String tipo) {
         return switch (tipo.toLowerCase()) {
-            case "palabra reservada" -> "#8A2BE2";
+            case "palabra reservada" -> "#569CD6";
             case "tipo de dato" -> "#0000FF";
             case "identificador" -> "#FFFFFF";
-            case "número" -> "#FF8C00";
-            case "cadena" -> "#008000";
-            case "operador" -> "#FF0000";
-            case "signo de puntuación" -> "#00CED1";
+            case "número" -> "#b5cea8";
+            case "cadena" -> "#D69D85";
+            case "operador" -> "#e9ccc0";
+            case "signo de puntuación" -> "#dbb69a";
             case "error" -> "#FF1493";
             default -> "#AAAAAA";
         };
