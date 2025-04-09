@@ -1,7 +1,7 @@
 package View;
 
 import Controller.TextLineNumber;
-import java_cup.runtime.Symbol;
+
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -49,11 +49,11 @@ public class IDECompilador extends JFrame {
 
         // Área de código
         codeEditor = new JTextPane ();
-        codeEditor.setBackground(new Color(30, 30, 30));
+        codeEditor.setBackground(new Color(122, 121, 117));
         codeEditor.setForeground(Color.WHITE);
         codeEditor.setCaretColor(Color.WHITE);
         codeEditor.setCaretPosition(0);
-        codeEditor.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        codeEditor.setFont(new Font("Monospaced", Font.PLAIN, 22));
         JScrollPane codeScrollPane = new JScrollPane(codeEditor);
         TextLineNumber lineNumberView = new TextLineNumber(codeEditor);
         codeScrollPane.setRowHeaderView(lineNumberView);

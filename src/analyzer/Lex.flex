@@ -57,6 +57,7 @@ public ArrayList<Yytoken> tokens;
             case "cadena" -> "#D69D85";
             case "operador" -> "#e9ccc0";
             case "signo de puntuación" -> "#dbb69a";
+            case "Directiva de Procesamiento" -> "#fff333";
             case "error" -> "#FF1493";
             default -> "#AAAAAA";
         };
@@ -89,6 +90,19 @@ GetByte = ("GetByte")
 SetByte = ("SetByte")
 Return = ("return")
 Break = ("break")
+Define = ("#define")
+Undef = ("#undef")
+If = ("#if")
+Elif = ("#elif")
+Else= ("#else")
+Endif = ("#endif")
+Line = ("#line")
+Error= ("#error")
+Region = ("#region")
+Endregion = ("#endregion")
+Nullable = ("#nullable")
+Pragma = ("#pragma")
+
 
 Identifiers = [a-zA-Z]([a-zA-Z0-9_])*
 LineTerminator = (\r)|(\n)|(\r\n)
@@ -190,3 +204,9 @@ Dot = (".")
     String tipo = "error";
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, true, getColorForType(tipo)));
 }
+
+{Define}|{Undef}|{If}|{Elif}|{Else}|{Endif}|{Line}|{Error}|{Region}|{Endregion}|{Nullable}|{Pragma} {
+    String tipo = "Directiva de Procesamiento";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
+}
+
