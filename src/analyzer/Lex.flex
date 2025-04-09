@@ -90,18 +90,18 @@ GetByte = ("GetByte")
 SetByte = ("SetByte")
 Return = ("return")
 Break = ("break")
-Define = ("#define")
-Undef = ("#undef")
-If = ("#if")
-Elif = ("#elif")
-Else= ("#else")
-Endif = ("#endif")
-Line = ("#line")
-Error= ("#error")
-Region = ("#region")
-Endregion = ("#endregion")
-Nullable = ("#nullable")
-Pragma = ("#pragma")
+Definepros = ("#define")
+Undefpros = ("#undef")
+Ifpros = ("#if")
+Elifpros = ("#elif")
+Elsepros= ("#else")
+Endifpros = ("#endif")
+Linepros = ("#line")
+Errorpros= ("#error")
+Regionpros = ("#region")
+Endregionpros = ("#endregion")
+Nullablepros = ("#nullable")
+Pragmapros = ("#pragma")
 
 
 Identifiers = [a-zA-Z]([a-zA-Z0-9_])*
@@ -205,7 +205,7 @@ Dot = (".")
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, true, getColorForType(tipo)));
 }
 
-{Define}|{Undef}|{If}|{Elif}|{Else}|{Endif}|{Line}|{Error}|{Region}|{Endregion}|{Nullable}|{Pragma} {
+{Definepros}|{Undefpros}|{Ifpros}|{Elifpros}|{Elsepros}|{Endifpros}|{Linepros}|{Errorpros}|{Regionpros}|{Endregionpros}|{Nullablepros}|{Pragmapros} {
     String tipo = "Directiva de Procesamiento";
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
 }
