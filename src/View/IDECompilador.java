@@ -53,7 +53,7 @@ public class IDECompilador extends JFrame {
         codeEditor.setForeground(Color.WHITE);
         codeEditor.setCaretColor(Color.WHITE);
         codeEditor.setCaretPosition(0);
-        codeEditor.setFont(new Font("Monospaced", Font.PLAIN, 22));
+        codeEditor.setFont(new Font("Monospaced", Font.PLAIN,17 ));
         JScrollPane codeScrollPane = new JScrollPane(codeEditor);
         TextLineNumber lineNumberView = new TextLineNumber(codeEditor);
         codeScrollPane.setRowHeaderView(lineNumberView);
