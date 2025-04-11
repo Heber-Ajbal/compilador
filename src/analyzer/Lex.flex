@@ -133,7 +133,7 @@ Short = ("short")
 Sizeof = ("sizeof")
 Stackalloc = ("stackalloc")
 Static = ("static")
-String = ("string")
+String = ("string") |("String")
 Struct = ("struct")
 Switch = ("switch")
 This = ("this")
@@ -163,9 +163,41 @@ Regionpros = ("#region")
 Endregionpros = ("#endregion")
 Nullablepros = ("#nullable")
 Pragmapros = ("#pragma")
+Get = ("get")
+Set = ("set")
+Value = ("value")
+Var = ("var")
+Async = ("async")
+Await = ("await")
+Yield = ("yield")
+Dynamic = ("dynamic")
+From = ("from")
+Select = ("select")
+Where = ("where")
+Join = ("join")
+Group = ("group")
+Into = ("into")
+Orderby = ("orderby")
+Let = ("let")
+On = ("on")
+By = ("by")
+Equals = ("equals")
+Add = ("add")
+Remove = ("remove")
+Global = ("global")
+Nameof = ("nameof")
+Required = ("required")
+With = ("with")
+File = ("file")
+Scoped = ("scoped")
+Init = ("init")
+Record = ("record")
 
 
-Identifiers = [a-zA-Z]([a-zA-Z0-9_])*
+
+
+InterpolatedString = \$\"([^\"\\\n{}]|\\.|(\{[^}]*\}))*\"
+Identifiers = [a-zA-Z_][a-zA-Z0-9_]*
 LineTerminator = (\r)|(\n)|(\r\n)
 Space = (" ")|(\t)|(\t\f)
 WhiteSpace = {LineTerminator}|{Space}
@@ -194,6 +226,33 @@ LogicalAnd = ("&&")
 LogicalOr = ("||")
 AssignmentOperator = ("=")
 DenialOperator = ("!")
+CharLiteral = \'([^\'\\\n]|\\[abfnrtv0\'\"\\])\'
+
+
+// Operadores adicionales
+IncrementOperator = ("++")
+DecrementOperator = ("--")
+AddAssign = ("+=")
+SubAssign = ("-=")
+MulAssign = ("*=")
+DivAssign = ("/=")
+ModAssign = ("%=")
+BitwiseAnd = ("&")
+BitwiseOr = ("|")
+BitwiseXor = ("^")
+BitwiseNot = ("~")
+BitwiseLeftShift = ("<<")
+BitwiseRightShift = (">>")
+AndAssign = ("&=")
+OrAssign = ("|=")
+XorAssign = ("^=")
+LeftShiftAssign = ("<<=")
+RightShiftAssign = (">>=")
+
+// Signos de puntuación adicionales
+Colon = (":")
+QuestionMark = ("?")
+Arrow = ("=>")
 
 OpeningParenthesis = ("(")
 ClosedParenthesis = (")")
@@ -219,7 +278,13 @@ Dot = (".")
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
 }
 
-{Abstract}|{As}|{Base}|{Bool}|{Break}|{Byte}|{Case}|{Catch}|{Char}|{Checked}|{Class}|{Const}|{Continue}|{Decimal}|{Delegate}|{Default}|{Do}|{Double}|{Else}|{Enum}|{Event}|{Explicit}|{Extends}|{Extern}|{False}|{Finally}|{Fixed}|{Float}|{For}|{Foreach}|{GetByte}|{Goto}|{If}|{Implements}|{Implicit}|{In}|{Int}|{Interface}|{Internal}|{Is}|{Lock}|{Long}|{Malloc}|{Namespace}|{New}|{NewArray}|{Null}|{Object}|{Operator}|{Out}|{Override}|{Params}|{Print}|{Private}|{Protected}|{Public}|{ReadInteger}|{ReadLine}|{Readonly}|{Ref}|{Return}|{Sbyte}|{Sealed}|{SetByte}|{Short}|{Sizeof}|{Stackalloc}|{Static}|{String}|{Struct}|{Switch}|{This}|{Throw}|{True}|{Try}|{Typeof}|{Uint}|{Ulong}|{Unchecked}|{Unsafe}|{Ushort}|{Using}|{Virtual}|{Void}|{Volatile}|{While} {
+{Abstract}|{As}|{Base}|{Bool}|{Break}|{Byte}|{Case}|{Catch}|{Char}|{Checked}|{Class}|{Const}|{Continue}|
+{Decimal}|{Delegate}|{Default}|{Do}|{Double}|{Else}|{Enum}|{Event}|{Explicit}|{Extends}|{Extern}|{False}|{Finally}|
+{Fixed}|{Float}|{For}|{Foreach}|{GetByte}|{Goto}|{If}|{Implements}|{Implicit}|{In}|{Int}|{Interface}|{Internal}|{Is}|
+{Lock}|{Long}|{Malloc}|{Namespace}|{New}|{NewArray}|{Null}|{Object}|{Operator}|{Out}|{Override}|{Params}|{Print}|
+{Private}|{Protected}|{Public}|{ReadInteger}|{ReadLine}|{Readonly}|{Ref}|{Return}|{Sbyte}|{Sealed}|{SetByte}|
+{Short}|{Sizeof}|{Stackalloc}|{Static}|{String}|{Struct}|{Switch}|{This}|{Throw}|{True}|{Try}|{Typeof}|{Uint}
+|{Ulong}|{Unchecked}|{Unsafe}|{Ushort}|{Using}|{Virtual}|{Void}|{Volatile}|{While}|{Get}|{Set}|{Value}|{Record}|{Var}|{Async}|{Await}|{Yield}|{Dynamic}|{From}|{Select}|{Where}|{Join}|{Group}|{Into}|{Orderby}|{Let}|{On}|{By}|{Equals}|{Add}|{Remove}|{Global}|{Nameof}|{Required}|{With}|{File}|{Scoped}|{Init} {
     String tipo = "palabra reservada";
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
 }
@@ -230,20 +295,23 @@ Dot = (".")
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
 }
 
-{StringConstants} {
+{StringConstants} | {InterpolatedString} {
     String tipo = "cadena";
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
 }
 
-{ArithmeticOperators}|{SumOperator}|{NegativeOperator}|{ComparisonOperators}|{EqualityOperators}|{LogicalAnd}|{LogicalOr}|{AssignmentOperator}|{DenialOperator} {
+{ArithmeticOperators}|{SumOperator}|{NegativeOperator}|{ComparisonOperators}|{EqualityOperators}|{LogicalAnd}|{LogicalOr}|{AssignmentOperator}|{DenialOperator}|{IncrementOperator}|{DecrementOperator}|{AddAssign}|{SubAssign}|{MulAssign}|{DivAssign}|{ModAssign}|
+{BitwiseAnd}|{BitwiseOr}|{BitwiseXor}|{BitwiseNot}|{BitwiseLeftShift}|{BitwiseRightShift}|{AndAssign}|{OrAssign}|{XorAssign}|{LeftShiftAssign}|{RightShiftAssign} {
     String tipo = "operador";
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
 }
 
-{OpeningParenthesis}|{ClosedParenthesis}|{Parenthesis}|{OpeningBracket}|{ClosedBracket}|{Brackets}|{OpeningCurlyBracket}|{ClosedCurlyBracket}|{CurlyBrackets}|{Semicolon}|{Comma}|{Dot} {
+
+{OpeningParenthesis}|{ClosedParenthesis}|{Parenthesis}|{OpeningBracket}|{ClosedBracket}|{Brackets}|{OpeningCurlyBracket}|{ClosedCurlyBracket}|{CurlyBrackets}|{Semicolon}|{Comma}|{Dot}|{Colon}|{QuestionMark}|{Arrow} {
     String tipo = "signo de puntuación";
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
 }
+
 
 {Identifiers} {
     String tipo = "identificador";
@@ -271,4 +339,11 @@ Dot = (".")
     String tipo = "Directiva de Procesamiento";
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
 }
+
+{CharLiteral} {
+    String tipo = "carácter";
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, "#D7BA7D"));
+}
+
+
 
