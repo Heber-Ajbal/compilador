@@ -49,21 +49,24 @@ this.tokens = new ArrayList<Yytoken>();
 public ArrayList<Yytoken> tokens;
 
 /*asignar color a nuestros tokens*/
-    private String getColorForType(String tipo) {
-        return switch (tipo.toLowerCase()) {
-            case "palabra reservada" -> "#2563EB";
-            case "tipo de dato" -> "#8B5CF6";
-            case "identificador" -> "#000000";
-            case "número" -> "#10B981";
-            case "cadena" -> "#F59E0B";
-            case "operador" -> "#5B2E48";
-            case "comentario" -> "#1bb400";
-            case "signo de puntuación" -> "#EC4899";
-            case "directiva de procesamiento" -> "#DB3069";
-            case "error" -> "#FF1493";
-            default -> "#000000";
-        };
-    }
+private String getColorForType(String tipo) {
+    return switch (tipo.toLowerCase()) {
+        case "palabra reservada" -> "#2563EB";
+        case "tipo de dato" -> "#8B5CF6";
+        case "identificador" -> "#000000";
+        case "número" -> "#10B981";
+        case "cadena" -> "#F59E0B";
+        case "operador" -> "#fb5404";              
+        case "comentario" -> "#1bb400";
+        case "signo de puntuación" -> "#E11D48";
+        case "directiva de procesamiento" -> "#DB3069";
+        case "error" -> "#FF1493";
+        default -> "#000000";
+    };
+}
+
+
+
 %}
 
 /* Definiciones de macros */

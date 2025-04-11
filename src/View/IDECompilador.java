@@ -25,6 +25,7 @@ public class IDECompilador extends JFrame {
     public IDECompilador() {
         setTitle("IDE Compilador");
         setSize(1000, 600);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         getContentPane().setBackground(new Color(40, 44, 52));
@@ -45,7 +46,7 @@ public class IDECompilador extends JFrame {
 
         // Panel principal dividido en dos: Editor de código y tabla de símbolos
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        mainSplitPane.setResizeWeight(0.7);
+        mainSplitPane.setResizeWeight(0.95);
 
         // Área de código
         codeEditor = new JTextPane ();
