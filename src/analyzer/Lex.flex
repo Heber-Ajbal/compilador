@@ -48,18 +48,20 @@ this.tokens = new ArrayList<Yytoken>();
 %{
 public ArrayList<Yytoken> tokens;
 
+/*asignar color a nuestros tokens*/
     private String getColorForType(String tipo) {
         return switch (tipo.toLowerCase()) {
-            case "palabra reservada" -> "#569CD6";
-            case "tipo de dato" -> "#0000FF";
-            case "identificador" -> "#FFFFFF";
-            case "número" -> "#b5cea8";
-            case "cadena" -> "#D69D85";
-            case "operador" -> "#e9ccc0";
-            case "signo de puntuación" -> "#dbb69a";
-            case "directiva de procesamiento" -> "#fff333";
+            case "palabra reservada" -> "#2563EB";
+            case "tipo de dato" -> "#8B5CF6";
+            case "identificador" -> "#000000";
+            case "número" -> "#10B981";
+            case "cadena" -> "#F59E0B";
+            case "operador" -> "#5B2E48";
+            case "comentario" -> "#1bb400";
+            case "signo de puntuación" -> "#EC4899";
+            case "directiva de procesamiento" -> "#DB3069";
             case "error" -> "#FF1493";
-            default -> "#AAAAAA";
+            default -> "#000000";
         };
     }
 %}
@@ -342,7 +344,7 @@ Dot = (".")
 
 {CharLiteral} {
     String tipo = "carácter";
-    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, "#D7BA7D"));
+    this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, "#F59E0B"));
 }
 
 

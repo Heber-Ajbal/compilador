@@ -49,11 +49,11 @@ public class IDECompilador extends JFrame {
 
         // Área de código
         codeEditor = new JTextPane ();
-        codeEditor.setBackground(new Color(122, 121, 117));
-        codeEditor.setForeground(Color.WHITE);
+        codeEditor.setBackground(new Color(230, 230, 230));
+        codeEditor.setForeground(Color.BLACK);
         codeEditor.setCaretColor(Color.WHITE);
         codeEditor.setCaretPosition(0);
-        codeEditor.setFont(new Font("Monospaced", Font.PLAIN,15 ));
+        codeEditor.setFont(new Font("Monospaced", Font.PLAIN,19 ));
         JScrollPane codeScrollPane = new JScrollPane(codeEditor);
         TextLineNumber lineNumberView = new TextLineNumber(codeEditor);
         codeScrollPane.setRowHeaderView(lineNumberView);
@@ -91,6 +91,7 @@ public class IDECompilador extends JFrame {
         StyleConstants.setForeground(normalStyle, Color.WHITE);
 
 
+        //realizar el analisis lexico
         executeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -98,7 +99,7 @@ public class IDECompilador extends JFrame {
                 errorModel.setRowCount(0);
                 try {
 
-                    String code = codeEditor.getText();
+                    String code = codeEditor.getText(); //obtener texto de editor
                     doc.remove(0, doc.getLength()); // Limpia el área
                     doc.insertString(0, code, normalStyle); // Muestra todo el código original
 
@@ -106,7 +107,7 @@ public class IDECompilador extends JFrame {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                     LexicalScanner scanner = new LexicalScanner(reader);
 
-// Ejecutar análisis léxico
+                    // Ejecutar análisis léxico
                     while (scanner.yylex() != null) {}
                     ArrayList<Yytoken> tokens = scanner.tokens;
 
@@ -144,6 +145,7 @@ public class IDECompilador extends JFrame {
             }
         });
 
+        //cargar nuestro archivo al editor de texto
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
