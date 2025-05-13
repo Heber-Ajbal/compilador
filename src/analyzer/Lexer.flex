@@ -330,119 +330,121 @@ Dot = (".")
 
 {UnrecognizedCharacters}    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Unrecognized char", true)); /* It's error so it doesn't return nothing */}
 /*  Reserved Words  */
-{Int}                       {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false,getColorForType("tipo de dato"))); return symbol(sym.INT);}
-{Double}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false,getColorForType("tipo de dato"))); return symbol(sym.DOUBLE);}
-{Bool}                      {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false,getColorForType("tipo de dato"))); return symbol(sym.BOOL);}
-{String}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false,getColorForType("tipo de dato"))); return symbol(sym.STRING);}
-{Null}                      {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sNull);}
-{For}                       {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.lFor);}
-{While}                     {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.lWhile);}
-{If}                        {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.cIf);}
-{Else}                      {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.cElse);}
-{Void}                      {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sVoid);}
-{Class}                     {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sClass);}
-{Interface}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sInterface);}
-{Extends}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sExtends);}
-{This}                      {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sThis);}
-{Print}                     {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sPrint);}
-{Implements}                {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sImplements);}
-{NewArray}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sNewArray);}
-{New}                       {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sNew);}
-{ReadInteger}               {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sReadInteger);}
-{ReadLine}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sReadLine);}
-{Malloc}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sMalloc);}
-{GetByte}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sGetByte);}
-{SetByte}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sSetByte);}
-{Return}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sReturn);}
-{Break}                     {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sBreak);}
-{As}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Base}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Byte}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Case}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Catch}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Char}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Checked}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Const}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Continue}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Decimal}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Delegate}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Default}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Do}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Enum}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Event}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Explicit}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Extern}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{False}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Fixed}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Float}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Foreach}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Goto}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Implicit}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{In}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Internal}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Is}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Lock}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Long}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Namespace}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Object}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Operator}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Out}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Override}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Params}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Private}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Protected}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Public}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Readonly}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Sbyte}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Ref}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Sealed}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Short}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Sizeof}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Stackalloc}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Static}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Struct}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Switch}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Throw}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{True}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Try}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Typeof}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Uint}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Ulong}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Unchecked}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Unsafe}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Ushort}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Using}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Virtual}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Volatile}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Get}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Set}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Value}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Var}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Async}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Await}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Yield}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Dynamic}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{From}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Select}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Where}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Join}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Group}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Into}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Orderby}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Let}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{On}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{By}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Equals}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Add}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Remove}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Global}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Nameof}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Required}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{With}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{File}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Scoped}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Init}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
-{Record}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false)); return symbol(sym.sAbstract);}
+{Int}            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("tipo de dato"))); return symbol(sym.INT); }
+{Double}         { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("tipo de dato"))); return symbol(sym.DOUBLE); }
+{Bool}           { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("tipo de dato"))); return symbol(sym.BOOL); }
+{String}         { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("tipo de dato"))); return symbol(sym.STRING); }
+{Void}           { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("tipo de dato"))); return symbol(sym.sVoid); }
+
+{Null}           { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sNull); }
+{For}            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.lFor); }
+{While}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.lWhile); }
+{If}             { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.cIf); }
+{Else}           { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.cElse); }
+{Class}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sClass); }
+{Interface}      { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sInterface); }
+{Extends}        { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sExtends); }
+{This}           { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sThis); }
+{Print}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sPrint); }
+{Implements}     { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sImplements); }
+{NewArray}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sNewArray); }
+{New}            { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sNew); }
+{ReadInteger}    { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sReadInteger); }
+{ReadLine}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sReadLine); }
+{Malloc}         { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sMalloc); }
+{GetByte}        { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sGetByte); }
+{SetByte}        { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sSetByte); }
+{Return}         { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sReturn); }
+{Break}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sBreak); }
+{As}             { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Base}           { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Byte}           { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Case}           { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Catch}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Char}        { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Checked}     { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Const}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Continue}    { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Decimal}     { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("tipo de dato"))); return symbol(sym.sAbstract); }
+{Delegate}    { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Default}     { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Do}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Enum}        { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Event}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Explicit}    { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Extern}      { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{False}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("t_logicalconstant"))); return symbol(sym.sAbstract); }
+{Fixed}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Float}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("tipo de dato"))); return symbol(sym.sAbstract); }
+{Foreach}     { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Goto}        { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Implicit}    { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{In}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Internal}    { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Is}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("operador"))); return symbol(sym.sAbstract); }
+{Lock}        { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Long}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Namespace}              {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Object}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Operator}               {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Out}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Override}               {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Params}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Private}                {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Protected}              {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Public}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Readonly}               {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Sbyte}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Ref}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Sealed}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Short}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Sizeof}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Stackalloc}             {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Static}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Struct}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Switch}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Throw}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{True}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Try}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Typeof}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Uint}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Ulong}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Unchecked}               {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Unsafe}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Ushort}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Using}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Virtual}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Volatile}                {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Get}                     {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Set}                     {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Value}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Var}                     {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Async}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Await}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Yield}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Dynamic}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{From}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Select}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Where}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Join}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Group}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Into}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Orderby}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Let}                     {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{On}                      {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{By}                      {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Equals}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Add}                     {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Remove}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Global}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Nameof}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Required}                {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{With}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{File}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Scoped}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Init}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{Record}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+
 
 
 /*Directiva de Procesamiento*/
