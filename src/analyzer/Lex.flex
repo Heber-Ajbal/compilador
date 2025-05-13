@@ -340,7 +340,8 @@ Dot = (".")
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, true, getColorForType(tipo)));
 }
 
-{Definepros}|{Undefpros}|{Ifpros}|{Elifpros}|{Elsepros}|{Endifpros}|{Linepros}|{Errorpros}|{Regionpros}|{Endregionpros}|{Nullablepros}|{Pragmapros} {
+{Definepros}|{Undefpros}|{Ifpros}|{Elifpros}|{Elsepros}|{Endifpros}|{Linepros}|
+{Errorpros}|{Regionpros}|{Endregionpros}|{Nullablepros}|{Pragmapros} {
     String tipo = "Directiva de Procesamiento";
     this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, tipo, false, getColorForType(tipo)));
 }

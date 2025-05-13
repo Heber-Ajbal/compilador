@@ -4,6 +4,7 @@ import Controller.TextLineNumber;
 
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -92,35 +93,41 @@ public class IDECompilador extends JFrame {
         StyleConstants.setForeground(normalStyle, Color.WHITE);
 
 
-        //realizar el analisis lexico
         executeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 symbolModel.setRowCount(0);
                 errorModel.setRowCount(0);
-                try {
 
-                    String code = codeEditor.getText(); //obtener texto de editor
-                    doc.remove(0, doc.getLength()); // Limpia el área
-                    doc.insertString(0, code, normalStyle); // Muestra todo el código original
+                ArrayList<Yytoken> lexicalTokens = null;
+                ArrayList<String> syntacticErrors = null;
+                boolean lexErrors = false;
+
+                try {
+                    String code = codeEditor.getText(); // obtener texto del editor
+                    doc.remove(0, doc.getLength());     // limpia el área
+                    doc.insertString(0, code, normalStyle); // muestra todo el código original
 
                     InputStream inputStream = new ByteArrayInputStream(code.getBytes());
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                    LexicalScanner scanner = new LexicalScanner(reader);
+                    LexicalScanner lexer = new LexicalScanner(reader);
+                    SyntacticAnalyzer parser = new SyntacticAnalyzer(lexer);
+                    parser.parse();
 
-                    // Ejecutar análisis léxico
-                    while (scanner.yylex() != null) {}
-                    ArrayList<Yytoken> tokens = scanner.tokens;
+                    lexicalTokens = lexer.tokens;
+                    syntacticErrors = parser.SyntacticErrors;
 
-                    int cursor = 0; // posición dentro del texto original
+                    String content = "";
+                    int cursor = 0;
 
-                    for (Yytoken token : tokens) {
-                        // Buscamos la próxima aparición del token desde la posición actual
+                    for (Yytoken token : lexicalTokens) {
+                        // Mostramos el token en el editor con color
                         int index = code.indexOf(token.token, cursor);
                         if (index >= 0) {
-                            // Estilo dinámico con el color definido en el token
                             Style style = codeEditor.addStyle("tokenStyle", null);
-                            StyleConstants.setForeground(style, Color.decode(token.color));
+                            if (token.color != null) {
+                                StyleConstants.setForeground(style, Color.decode(token.color));
+                            }
 
                             if (token.type.equalsIgnoreCase("keyword") || token.type.equalsIgnoreCase("type")) {
                                 StyleConstants.setBold(style, true);
@@ -130,14 +137,34 @@ public class IDECompilador extends JFrame {
                             cursor = index + token.token.length();
                         }
 
-                        // Tabla de símbolos
+                        // Agregamos a la tabla de símbolos
                         Object[] row = {token.token, token.type, token.line};
                         symbolModel.addRow(row);
 
+                        // Si hay error léxico
                         if (token.error) {
                             Object[] errorRow = {token.isError()};
                             errorModel.addRow(errorRow);
+                            content += token.isError() + "\r\n";
+                            lexErrors = true;
                         }
+                    }
+
+                    // Errores sintácticos
+                    for (String element : syntacticErrors) {
+                        Object[] errorRow = {element};
+                        errorModel.addRow(errorRow);
+                        content += element + "\r\n";
+                    }
+
+                    if (!lexErrors && syntacticErrors.isEmpty()) {
+                        JOptionPane.showMessageDialog(null,
+                                "El código es léxica y sintácticamente correcto.",
+                                "Correcto", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null,
+                                "Se encontraron errores. Revisa el panel de errores.",
+                                "Errores", JOptionPane.ERROR_MESSAGE);
                     }
 
                 } catch (Exception ex) {
@@ -145,6 +172,7 @@ public class IDECompilador extends JFrame {
                 }
             }
         });
+
 
         //cargar nuestro archivo al editor de texto
         openButton.addActionListener(new ActionListener() {
@@ -167,6 +195,36 @@ public class IDECompilador extends JFrame {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(null, "Error al leer el archivo", "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                }
+            }
+        });
+
+        stopButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String cupFilePath = "C:\\Users\\omarm\\IdeaProjects\\Compilador\\src\\analyzer\\Syntactic.cup";
+                File cupFile = new File(cupFilePath);
+
+                if (cupFile.exists()) {
+                    try {
+                        String[] args = {"-parser", "SyntacticAnalyzer", cupFilePath}; // Cambia el nombre del parser si es necesario
+
+                        java_cup.Main.main(args);
+
+                        JOptionPane.showMessageDialog(null,
+                                "El archivo Syntactic.cup se ha compilado correctamente.",
+                                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+                    } catch (Exception exe) {
+                        JOptionPane.showMessageDialog(null,
+                                "No se pudo compilar el archivo Syntactic.cup.\n" + exe.getMessage(),
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        exe.printStackTrace();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "El archivo Syntactic.cup no fue encontrado en la ruta especificada.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

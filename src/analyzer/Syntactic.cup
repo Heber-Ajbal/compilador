@@ -1,5 +1,5 @@
-package analyzer;
-//Java Libraries
+package lexical.scanner.mini.c;
+
 //Java Libraries
 import java.util.ArrayList;
 import java_cup.runtime.Symbol;
@@ -43,9 +43,7 @@ precedence nonassoc OpeningBracket,dot;
 precedence nonassoc cElse;
 
 /* Grammar */
-/*start with Program;*/
 start with Program;
-
 
 Program ::= Decl ProgramA;
 ProgramA ::= ProgramA Decl| /* epsilon */;
@@ -57,7 +55,7 @@ Decl ::=  VariableDecl|
           error pyc|
           error ClosedCurlyBracket;
 
-VariableDecl ::= Variable pyc;
+VariableDecl ::= Variable pyc | Variable assignment Expr pyc;
 
 Variable ::= Type ident;
 
