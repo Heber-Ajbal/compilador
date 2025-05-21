@@ -30,7 +30,7 @@ terminal ident, pyc, INT, DOUBLE, BOOL, STRING, OpeningBracket, ClosedBracket,
     ComparisonOperators, equality, negative, sum, ArithmeticOperators, denial,
     Brackets, and, or, Parenthesis, CurlyBrackets, sUsing, namespaceName, sNameSpace,
     sPublic, sPrivate, sProtected, sGet, sSet, sStatic, sVirtual, sOverride,
-    sAbstract, colon,sInterface;
+    sAbstract, colon,sInterface,IncrementOperator,sDo,sTry, sCatch, sFinally,sSwitch, sCase, sDefault;
 
 /* Non Terminals */
 non terminal Program, ProgramA, Decl, VariableDecl, VariableDeclAux, Variable,
@@ -40,7 +40,8 @@ non terminal Program, ProgramA, Decl, VariableDecl, VariableDeclAux, Variable,
     BreakStmt, PrintStmt, Expr, ExprOZ, ExprRepeat, LValue, Call, LibCall,
     Actuals, Constant, UsingDirective, NamespaceDecl, RepeatableNamespaceContent,
     PropertyDecl, Accessors, Accessor, AllModifiersOpt, FunctionModifier,
-    MemberDecl, ConstructorDecl, ClassMemberDecls;
+    MemberDecl, ConstructorDecl, ClassMemberDecls,VariableDeclStmt,ForInit,ForCond,ForIter,DoWhileStmt,TryCatchStmt,
+    TryCatchFinallyStmt,CatchBlock,SwitchStmt,SwitchSections,SwitchSection,StmtList;
 
 /* Precedence */
 precedence left assignment;
@@ -50,6 +51,7 @@ precedence left sum, negative, ArithmeticOperators;
 precedence nonassoc denial;
 precedence nonassoc OpeningBracket, dot;
 precedence nonassoc cElse;
+precedence nonassoc IncrementOperator;
 
 /* Start */
 start with Program;
@@ -77,16 +79,21 @@ AllModifiersOpt ::= AllModifiersOpt FunctionModifier
                   | sPrivate
                   | sProtected
                   | /* epsilon */;
+
 FunctionModifier ::= sStatic | sVirtual | sOverride | sAbstract;
 
 MemberDecl ::= AllModifiersOpt ConstructorDecl
              | AllModifiersOpt FunctionDecl
-             | AllModifiersOpt VariableDecl
+             | AllModifiersOpt VariableDeclStmt
              | AllModifiersOpt PropertyDecl;
 
 ConstructorDecl ::= ident OpeningParenthesis FormalListOpt ClosedParenthesis StmtBlock;
 
-VariableDecl ::= Variable pyc | Variable assignment Expr pyc;
+VariableDeclStmt ::= VariableDecl pyc;
+
+VariableDecl ::= Variable
+               | Variable assignment Expr;
+
 Variable ::= Type ident;
 
 Type ::= INT | DOUBLE | BOOL | STRING | ident | Type Brackets;
@@ -109,23 +116,64 @@ ClassMemberDecls ::= ClassMemberDecls MemberDecl | /* epsilon */;
 InterfaceDecl ::= sInterface ident OpeningCurlyBracket RepeatablePrototype ClosedCurlyBracket
                 | sInterface ident CurlyBrackets;
 RepeatablePrototype ::= RepeatablePrototype Prototype | /* epsilon */;
+
 Prototype ::= Type ident OpeningParenthesis FormalListOpt ClosedParenthesis pyc
             | sVoid ident OpeningParenthesis FormalListOpt ClosedParenthesis pyc;
 
-StmtBlock ::= OpeningCurlyBracket VariableDeclAux StmtAux ClosedCurlyBracket | CurlyBrackets;
-VariableDeclAux ::= VariableDeclAux VariableDecl | /* epsilon */;
+StmtBlock ::= OpeningCurlyBracket VariableDeclAux StmtAux ClosedCurlyBracket
+            | CurlyBrackets;
+
+VariableDeclAux ::= VariableDeclAux VariableDeclStmt | /* epsilon */;
 StmtAux ::= Stmt StmtAux | /* epsilon */;
 
-Stmt ::= Expr pyc | pyc | IfStmt | WhileStmt | ForStmt | BreakStmt | ReturnStmt | PrintStmt | StmtBlock;
+Stmt ::= Expr pyc
+       | pyc
+       | IfStmt
+       | WhileStmt
+       | ForStmt
+       | BreakStmt
+       | ReturnStmt
+       | PrintStmt
+       | StmtBlock
+       | TryCatchStmt
+       | TryCatchFinallyStmt
+       | SwitchStmt
+       | DoWhileStmt;
+
 ExprOZ ::= Expr | /* epsilon */;
 
 IfStmt ::= cIf OpeningParenthesis Expr ClosedParenthesis Stmt ElseStmt;
 ElseStmt ::= cElse Stmt | /* epsilon */;
 WhileStmt ::= lWhile OpeningParenthesis Expr ClosedParenthesis Stmt;
-ForStmt ::= lFor OpeningParenthesis ExprOZ pyc Expr pyc ExprOZ ClosedParenthesis Stmt;
+DoWhileStmt ::= sDo Stmt lWhile OpeningParenthesis Expr ClosedParenthesis pyc;
+
+TryCatchStmt ::= sTry StmtBlock CatchBlock;
+
+TryCatchFinallyStmt ::= sTry StmtBlock CatchBlock sFinally StmtBlock;
+
+CatchBlock ::= sCatch OpeningParenthesis Type ident ClosedParenthesis StmtBlock;
+
+SwitchStmt ::= sSwitch OpeningParenthesis Expr ClosedParenthesis OpeningCurlyBracket SwitchSections ClosedCurlyBracket;
+
+SwitchSections ::= SwitchSections SwitchSection | /* epsilon */;
+
+SwitchSection ::= sCase Constant colon StmtList
+                | sDefault colon StmtList;
+
+StmtList ::= Stmt StmtList | /* epsilon */;
+
+/* For estrictamente válido: no permite vacío */
+ForInit ::= VariableDecl
+          | Expr;
+
+ForCond ::= Expr;
+ForIter ::= Expr;
+
+ForStmt ::= lFor OpeningParenthesis ForInit pyc ForCond pyc ForIter ClosedParenthesis Stmt;
 
 ReturnStmt ::= sReturn ExprOZ pyc;
 BreakStmt ::= sBreak pyc;
+
 PrintStmt ::= sPrint OpeningParenthesis Expr ExprRepeat ClosedParenthesis pyc;
 ExprRepeat ::= comma Expr ExprRepeat | /* epsilon */;
 
@@ -148,9 +196,13 @@ Expr ::= LValue assignment Expr
        | sNewArray OpeningParenthesis Expr comma Type ClosedParenthesis
        | sReadInteger Parenthesis
        | sReadLine Parenthesis
-       | sMalloc OpeningParenthesis Expr ClosedParenthesis;
+       | sMalloc OpeningParenthesis Expr ClosedParenthesis
+       | IncrementOperator Expr      // ++i
+       | Expr IncrementOperator;     // i++
 
-LValue ::= ident | Expr dot ident | Expr OpeningBracket Expr ClosedBracket;
+LValue ::= ident
+         | Expr dot ident
+         | Expr OpeningBracket Expr ClosedBracket;
 
 Call ::= ident OpeningParenthesis Actuals ClosedParenthesis
        | ident Parenthesis
@@ -164,7 +216,11 @@ LibCall ::= sGetByte OpeningParenthesis Expr ClosedParenthesis
 
 Actuals ::= Expr ExprRepeat | /* epsilon */;
 
-Constant ::= integerConstant | doubleConstant | boolConstant | stringConstant | sNull;
+Constant ::= integerConstant
+           | doubleConstant
+           | boolConstant
+           | stringConstant
+           | sNull;
 
 PropertyDecl ::= Type ident OpeningCurlyBracket Accessors ClosedCurlyBracket;
 Accessors ::= Accessor Accessors | Accessor;
