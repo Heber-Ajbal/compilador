@@ -24,26 +24,23 @@ parser code {:
 /* Terminals */
 terminal ident, pyc, INT, DOUBLE, BOOL, STRING, OpeningBracket, ClosedBracket,
     OpeningParenthesis, ClosedParenthesis, sVoid, comma, sClass, OpeningCurlyBracket,
-    ClosedCurlyBracket, sExtends, sImplements, sInterface, cIf, cElse, lWhile,
-    lFor, sReturn, sBreak, sPrint, assignment, sThis, sNew, sNewArray,
-    sReadInteger, sMalloc, dot, sGetByte, sSetByte, sNull, sReadLine,
-    integerConstant, doubleConstant, boolConstant, stringConstant,
-    ComparisonOperators, equality, negative, sum, ArithmeticOperators,
-    denial, Brackets, and, or, Parenthesis, CurlyBrackets, sUsing,
-    namespaceName, sNameSpace, sPublic, sPrivate, sProtected, sGet, sSet,
-    sStatic, sVirtual, sOverride, sAbstract;
+    ClosedCurlyBracket, cIf, cElse, lWhile, lFor, sReturn, sBreak, sPrint, assignment,
+    sThis, sNew, sNewArray, sReadInteger, sMalloc, dot, sGetByte, sSetByte, sNull,
+    sReadLine, integerConstant, doubleConstant, boolConstant, stringConstant,
+    ComparisonOperators, equality, negative, sum, ArithmeticOperators, denial,
+    Brackets, and, or, Parenthesis, CurlyBrackets, sUsing, namespaceName, sNameSpace,
+    sPublic, sPrivate, sProtected, sGet, sSet, sStatic, sVirtual, sOverride,
+    sAbstract, colon,sInterface;
 
 /* Non Terminals */
 non terminal Program, ProgramA, Decl, VariableDecl, VariableDeclAux, Variable,
-    Type, FunctionDecl, FormalListOpt, RepeatVariable, ClassDecl, ExtIdent, ImpIdent,
-    MultipleIdents, InterfaceDecl, Prototype, RepeatablePrototype, StmtBlock,
-    Stmt, StmtAux, IfStmt, ElseStmt, WhileStmt, ForStmt, ReturnStmt,
+    Type, FunctionDecl, FormalListOpt, RepeatVariable, ClassDecl, ExtClause,
+    BaseTypeList, MoreBaseTypes, InterfaceDecl, Prototype, RepeatablePrototype,
+    StmtBlock, Stmt, StmtAux, IfStmt, ElseStmt, WhileStmt, ForStmt, ReturnStmt,
     BreakStmt, PrintStmt, Expr, ExprOZ, ExprRepeat, LValue, Call, LibCall,
-    Actuals, Constant, UsingDirective, NamespaceDecl,
-    RepeatableNamespaceContent, PropertyDecl, Accessors,
-    AllModifiersOpt, FunctionModifier, MemberDecl,
-    ConstructorDecl,
-    ClassMemberDecls;
+    Actuals, Constant, UsingDirective, NamespaceDecl, RepeatableNamespaceContent,
+    PropertyDecl, Accessors, Accessor, AllModifiersOpt, FunctionModifier,
+    MemberDecl, ConstructorDecl, ClassMemberDecls;
 
 /* Precedence */
 precedence left assignment;
@@ -73,7 +70,6 @@ UsingDirective ::= sUsing namespaceName pyc | sUsing ident pyc;
 
 NamespaceDecl ::= sNameSpace ident OpeningCurlyBracket RepeatableNamespaceContent ClosedCurlyBracket
                 | sNameSpace namespaceName OpeningCurlyBracket RepeatableNamespaceContent ClosedCurlyBracket;
-
 RepeatableNamespaceContent ::= RepeatableNamespaceContent Decl | /* epsilon */;
 
 AllModifiersOpt ::= AllModifiersOpt FunctionModifier
@@ -81,7 +77,6 @@ AllModifiersOpt ::= AllModifiersOpt FunctionModifier
                   | sPrivate
                   | sProtected
                   | /* epsilon */;
-
 FunctionModifier ::= sStatic | sVirtual | sOverride | sAbstract;
 
 MemberDecl ::= AllModifiersOpt ConstructorDecl
@@ -91,16 +86,7 @@ MemberDecl ::= AllModifiersOpt ConstructorDecl
 
 ConstructorDecl ::= ident OpeningParenthesis FormalListOpt ClosedParenthesis StmtBlock;
 
-VariableDecl ::= Variable pyc
-               | Variable assignment Expr pyc;
-
-PropertyDecl ::= Type ident OpeningCurlyBracket Accessors ClosedCurlyBracket;
-
-Accessors ::= sGet pyc sSet pyc
-            | sSet pyc sGet pyc
-            | sGet pyc
-            | sSet pyc;
-
+VariableDecl ::= Variable pyc | Variable assignment Expr pyc;
 Variable ::= Type ident;
 
 Type ::= INT | DOUBLE | BOOL | STRING | ident | Type Brackets;
@@ -111,20 +97,18 @@ FunctionDecl ::= Type ident OpeningParenthesis FormalListOpt ClosedParenthesis S
 FormalListOpt ::= Variable RepeatVariable | /* epsilon */;
 RepeatVariable ::= comma Variable RepeatVariable | /* epsilon */;
 
-ClassDecl ::= sClass ident ExtIdent ImpIdent OpeningCurlyBracket ClassMemberDecls ClosedCurlyBracket
-            | sClass ident ExtIdent ImpIdent CurlyBrackets;
+ClassDecl ::= sClass ident ExtClause OpeningCurlyBracket ClassMemberDecls ClosedCurlyBracket
+            | sClass ident ExtClause CurlyBrackets;
+
+ExtClause ::= colon BaseTypeList | /* epsilon */;
+BaseTypeList ::= ident MoreBaseTypes;
+MoreBaseTypes ::= comma ident MoreBaseTypes | /* epsilon */;
 
 ClassMemberDecls ::= ClassMemberDecls MemberDecl | /* epsilon */;
 
-ExtIdent ::= sExtends ident | /* epsilon */;
-ImpIdent ::= sImplements MultipleIdents | /* epsilon */;
-MultipleIdents ::= ident | MultipleIdents comma ident;
-
 InterfaceDecl ::= sInterface ident OpeningCurlyBracket RepeatablePrototype ClosedCurlyBracket
                 | sInterface ident CurlyBrackets;
-
 RepeatablePrototype ::= RepeatablePrototype Prototype | /* epsilon */;
-
 Prototype ::= Type ident OpeningParenthesis FormalListOpt ClosedParenthesis pyc
             | sVoid ident OpeningParenthesis FormalListOpt ClosedParenthesis pyc;
 
@@ -137,14 +121,12 @@ ExprOZ ::= Expr | /* epsilon */;
 
 IfStmt ::= cIf OpeningParenthesis Expr ClosedParenthesis Stmt ElseStmt;
 ElseStmt ::= cElse Stmt | /* epsilon */;
-
 WhileStmt ::= lWhile OpeningParenthesis Expr ClosedParenthesis Stmt;
 ForStmt ::= lFor OpeningParenthesis ExprOZ pyc Expr pyc ExprOZ ClosedParenthesis Stmt;
 
 ReturnStmt ::= sReturn ExprOZ pyc;
 BreakStmt ::= sBreak pyc;
 PrintStmt ::= sPrint OpeningParenthesis Expr ExprRepeat ClosedParenthesis pyc;
-
 ExprRepeat ::= comma Expr ExprRepeat | /* epsilon */;
 
 Expr ::= LValue assignment Expr
@@ -168,9 +150,7 @@ Expr ::= LValue assignment Expr
        | sReadLine Parenthesis
        | sMalloc OpeningParenthesis Expr ClosedParenthesis;
 
-LValue ::= ident
-         | Expr dot ident
-         | Expr OpeningBracket Expr ClosedBracket;
+LValue ::= ident | Expr dot ident | Expr OpeningBracket Expr ClosedBracket;
 
 Call ::= ident OpeningParenthesis Actuals ClosedParenthesis
        | ident Parenthesis
@@ -185,3 +165,10 @@ LibCall ::= sGetByte OpeningParenthesis Expr ClosedParenthesis
 Actuals ::= Expr ExprRepeat | /* epsilon */;
 
 Constant ::= integerConstant | doubleConstant | boolConstant | stringConstant | sNull;
+
+PropertyDecl ::= Type ident OpeningCurlyBracket Accessors ClosedCurlyBracket;
+Accessors ::= Accessor Accessors | Accessor;
+Accessor ::= sGet StmtBlock
+           | sSet StmtBlock
+           | sGet pyc
+           | sSet pyc;

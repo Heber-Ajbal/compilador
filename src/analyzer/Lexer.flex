@@ -245,6 +245,7 @@ Record = ("record")
 Identifiers = [a-zA-Z_]([a-zA-Z0-9_])*
 NamespaceName = [a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*
 
+
 /* White Spaces */
 LineTerminator = (\r)|(\n)|(\r\n)
 Space = (" ")|(\t)|(\t\f)
@@ -374,7 +375,7 @@ Dot = (".")
 {Event}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
 {Explicit}    { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
 {Extern}      { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
-{False}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("t_logicalconstant"))); return symbol(sym.sAbstract); }
+{False}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("t_logicalconstant"))); return symbol(sym.boolConstant); }
 {Fixed}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
 {Float}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("tipo de dato"))); return symbol(sym.sAbstract); }
 {Foreach}     { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
@@ -405,7 +406,7 @@ Dot = (".")
 {Struct}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
 {Switch}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
 {Throw}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
-{True}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
+{True}                   {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.boolConstant);}
 {Try}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
 {Typeof}                  {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
 {Uint}                    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract);}
@@ -476,7 +477,6 @@ Dot = (".")
 {ComparisonOperators}       {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false)); return symbol(sym.ComparisonOperators);}
 {SumOperator}               {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false)); return symbol(sym.sum);}
 {NegativeOperator}          {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false)); return symbol(sym.negative);}
-{EqualityOperators}         {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false)); return symbol(sym.equality);}
 {LogicalAnd}                {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false)); return symbol(sym.and);}
 {LogicalOr}                 {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false)); return symbol(sym.or);}
 {AssignmentOperator}        {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false)); return symbol(sym.assignment);}
@@ -495,7 +495,7 @@ Dot = (".")
 {Dot}                       {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false)); return symbol(sym.dot);}
 
 
-{Colon}                       {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false,getColorForType("signo de puntuación"))); return symbol(sym.dot);}
+{Colon}                       {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false,getColorForType("signo de puntuación"))); return symbol(sym.colon);}
 {QuestionMark}                {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false,getColorForType("signo de puntuación"))); return symbol(sym.dot);}
 {Arrow}                       {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "\'"+ yytext()+"\'", false,getColorForType("signo de puntuación"))); return symbol(sym.dot);}
 
