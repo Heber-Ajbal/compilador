@@ -2,26 +2,19 @@ package View;
 
 import Controller.TextLineNumber;
 
-
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class IDECompilador extends JFrame {
-    private JTextPane  codeEditor;
+    private JTextPane codeEditor;
     private JTable symbolTable, errorTable;
     private JButton openButton, executeButton, stopButton;
+    private JScrollPane codeScrollPane;
+    private TextLineNumber lineNumberView;
 
     public IDECompilador() {
         setTitle("IDE Compilador");
@@ -35,9 +28,9 @@ public class IDECompilador extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(new Color(30, 30, 30));
 
-        openButton = createStyledButton("Abrir", new Color(50, 205, 50), "src/View/ICONOS/abrir.png");// Verde
-        executeButton = createStyledButton("Ejecutar", new Color(255, 140, 0), "src/View/ICONOS/iniciar.png"); // Naranja
-        stopButton = createStyledButton("Detener", new Color(220, 20, 60), "src/View/ICONOS/parar.png");// Rojo
+        openButton = createStyledButton("Abrir", new Color(50, 205, 50), "src/View/ICONOS/abrir.png");
+        executeButton = createStyledButton("Ejecutar", new Color(255, 140, 0), "src/View/ICONOS/iniciar.png");
+        stopButton = createStyledButton("Detener", new Color(220, 20, 60), "src/View/ICONOS/parar.png");
 
         buttonPanel.add(openButton);
         buttonPanel.add(executeButton);
@@ -45,19 +38,17 @@ public class IDECompilador extends JFrame {
 
         add(buttonPanel, BorderLayout.NORTH);
 
-        // Panel principal dividido en dos: Editor de código y tabla de símbolos
-        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        mainSplitPane.setResizeWeight(0.95);
-
         // Área de código
-        codeEditor = new JTextPane ();
-        codeEditor.setBackground(new Color(230, 230, 230));
+        codeEditor = new JTextPane();
+        codeEditor.setBackground(Color.WHITE);
         codeEditor.setForeground(Color.BLACK);
-        codeEditor.setCaretColor(Color.WHITE);
-        codeEditor.setCaretPosition(0);
-        codeEditor.setFont(new Font("Monospaced", Font.PLAIN,19 ));
-        JScrollPane codeScrollPane = new JScrollPane(codeEditor);
-        TextLineNumber lineNumberView = new TextLineNumber(codeEditor);
+        codeEditor.setCaretColor(Color.BLACK);
+        codeEditor.setFont(new Font("Monospaced", Font.PLAIN, 19));
+
+        codeScrollPane = new JScrollPane(codeEditor);
+
+        // Crear y asignar UNA vez el TextLineNumber
+        lineNumberView = new TextLineNumber(codeEditor);
         codeScrollPane.setRowHeaderView(lineNumberView);
 
         // Panel derecho con tabla de símbolos
@@ -68,8 +59,8 @@ public class IDECompilador extends JFrame {
         symbolTable.setForeground(Color.WHITE);
         JScrollPane tableScrollPane = new JScrollPane(symbolTable);
 
-        mainSplitPane.setLeftComponent(codeScrollPane);
-        mainSplitPane.setRightComponent(tableScrollPane);
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, codeScrollPane, tableScrollPane);
+        mainSplitPane.setResizeWeight(0.95);
 
         // Panel inferior con tabla de errores
         String[] errorColumns = {"Error"};
@@ -83,155 +74,125 @@ public class IDECompilador extends JFrame {
         verticalSplitPane.setResizeWeight(0.8);
         add(verticalSplitPane, BorderLayout.CENTER);
 
-        StyledDocument doc = codeEditor.getStyledDocument();
+        executeButton.addActionListener(e -> {
+            symbolModel.setRowCount(0);
+            errorModel.setRowCount(0);
 
-        Style keywordStyle = codeEditor.addStyle("Keyword", null);
-        StyleConstants.setForeground(keywordStyle, Color.BLUE);
-        StyleConstants.setBold(keywordStyle, true);
+            try {
+                String code = codeEditor.getText();
 
-        Style normalStyle = codeEditor.addStyle("Normal", null);
-        StyleConstants.setForeground(normalStyle, Color.WHITE);
+                // Asignar texto con setText para evitar problemas con documento
+                codeEditor.setText(code);
 
+                // Obtener documento para estilos
+                StyledDocument doc = codeEditor.getStyledDocument();
 
-        executeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                symbolModel.setRowCount(0);
-                errorModel.setRowCount(0);
+                // Limpia estilos previos
+                doc.setCharacterAttributes(0, doc.getLength(), codeEditor.getStyle("default"), true);
 
-                ArrayList<Yytoken> lexicalTokens = null;
-                ArrayList<String> syntacticErrors = null;
+                InputStream inputStream = new ByteArrayInputStream(code.getBytes());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                LexicalScanner lexer = new LexicalScanner(reader);
+                SyntacticAnalyzer parser = new SyntacticAnalyzer(lexer);
+                parser.parse();
+
+                ArrayList<Yytoken> lexicalTokens = lexer.tokens;
+                ArrayList<String> syntacticErrors = parser.SyntacticErrors;
+
+                int cursor = 0;
                 boolean lexErrors = false;
 
-                try {
-                    String code = codeEditor.getText(); // obtener texto del editor
-                    doc.remove(0, doc.getLength());     // limpia el área
-                    doc.insertString(0, code, normalStyle); // muestra todo el código original
-
-                    InputStream inputStream = new ByteArrayInputStream(code.getBytes());
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                    LexicalScanner lexer = new LexicalScanner(reader);
-                    SyntacticAnalyzer parser = new SyntacticAnalyzer(lexer);
-                    parser.parse();
-
-                    lexicalTokens = lexer.tokens;
-                    syntacticErrors = parser.SyntacticErrors;
-
-                    String content = "";
-                    int cursor = 0;
-
-                    for (Yytoken token : lexicalTokens) {
-                        // Mostramos el token en el editor con color
-                        int index = code.indexOf(token.token, cursor);
-                        if (index >= 0) {
-                            Style style = codeEditor.addStyle("tokenStyle", null);
-                            if (token.color != null) {
-                                StyleConstants.setForeground(style, Color.decode(token.color));
-                            }
-
-                            if (token.type.equalsIgnoreCase("keyword") || token.type.equalsIgnoreCase("type")) {
-                                StyleConstants.setBold(style, true);
-                            }
-
-                            doc.setCharacterAttributes(index, token.token.length(), style, true);
-                            cursor = index + token.token.length();
+                for (Yytoken token : lexicalTokens) {
+                    int index = code.indexOf(token.token, cursor);
+                    if (index >= 0) {
+                        Style style = codeEditor.addStyle("tokenStyle", null);
+                        if (token.color != null) {
+                            StyleConstants.setForeground(style, Color.decode(token.color));
                         }
-
-                        // Agregamos a la tabla de símbolos
-                        Object[] row = {token.token, token.type, token.line};
-                        symbolModel.addRow(row);
-
-                        // Si hay error léxico
-                        if (token.error) {
-                            Object[] errorRow = {token.isError()};
-                            errorModel.addRow(errorRow);
-                            content += token.isError() + "\r\n";
-                            lexErrors = true;
+                        if ("keyword".equalsIgnoreCase(token.type) || "type".equalsIgnoreCase(token.type)) {
+                            StyleConstants.setBold(style, true);
                         }
+                        doc.setCharacterAttributes(index, token.token.length(), style, true);
+                        cursor = index + token.token.length();
                     }
-
-                    // Errores sintácticos
-                    for (String element : syntacticErrors) {
-                        Object[] errorRow = {element};
-                        errorModel.addRow(errorRow);
-                        content += element + "\r\n";
-                    }
-
-                    if (!lexErrors && syntacticErrors.isEmpty()) {
-                        JOptionPane.showMessageDialog(null,
-                                "El código es léxica y sintácticamente correcto.",
-                                "Correcto", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(null,
-                                "Se encontraron errores. Revisa el panel de errores.",
-                                "Errores", JOptionPane.ERROR_MESSAGE);
-                    }
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
-
-
-        //cargar nuestro archivo al editor de texto
-        openButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Seleccionar archivo C#");
-                int result = fileChooser.showOpenDialog(null);
-
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-
-                    try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
-                        codeEditor.setText(""); // limpia el editor
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            codeEditor.getDocument().insertString(codeEditor.getDocument().getLength(), line + "\n", null);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Error al leer el archivo", "Error", JOptionPane.ERROR_MESSAGE);
+                    symbolModel.addRow(new Object[]{token.token, token.type, token.line});
+                    if (token.error) {
+                        errorModel.addRow(new Object[]{token.isError()});
+                        lexErrors = true;
                     }
                 }
-            }
-        });
 
-        stopButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String cupFilePath = "C:\\Users\\omarm\\IdeaProjects\\Compilador\\src\\analyzer\\Syntactic.cup";
-                File cupFile = new File(cupFilePath);
+                for (String err : syntacticErrors) {
+                    errorModel.addRow(new Object[]{err});
+                }
 
-                if (cupFile.exists()) {
-                    try {
-                        String[] args = {"-parser", "SyntacticAnalyzer", cupFilePath}; // Cambia el nombre del parser si es necesario
-
-                        java_cup.Main.main(args);
-
-                        JOptionPane.showMessageDialog(null,
-                                "El archivo Syntactic.cup se ha compilado correctamente.",
-                                "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                    } catch (Exception exe) {
-                        JOptionPane.showMessageDialog(null,
-                                "No se pudo compilar el archivo Syntactic.cup.\n" + exe.getMessage(),
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                        exe.printStackTrace();
-                    }
+                if (!lexErrors && syntacticErrors.isEmpty()) {
+                    JOptionPane.showMessageDialog(null,
+                            "El código es léxica y sintácticamente correcto.",
+                            "Correcto", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(null,
-                            "El archivo Syntactic.cup no fue encontrado en la ruta especificada.",
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                            "Se encontraron errores. Revisa el panel de errores.",
+                            "Errores", JOptionPane.ERROR_MESSAGE);
+                }
+
+                // El truco: Remover y volver a poner el TextLineNumber para reiniciar la numeración
+                codeScrollPane.setRowHeaderView(null);
+                codeScrollPane.setRowHeaderView(lineNumberView);
+                lineNumberView.repaint();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        openButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Seleccionar archivo C#");
+            int result = fileChooser.showOpenDialog(null);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+
+                try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line).append("\n");
+                    }
+                    codeEditor.setText(sb.toString());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error al leer el archivo", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
+        stopButton.addActionListener(e -> {
+            String cupFilePath = "C:\\Users\\omarm\\IdeaProjects\\Compilador\\src\\analyzer\\Syntactic.cup";
+            File cupFile = new File(cupFilePath);
+
+            if (cupFile.exists()) {
+                try {
+                    String[] args = {"-parser", "SyntacticAnalyzer", cupFilePath};
+                    java_cup.Main.main(args);
+
+                    JOptionPane.showMessageDialog(null,
+                            "El archivo Syntactic.cup se ha compilado correctamente.",
+                            "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception exe) {
+                    JOptionPane.showMessageDialog(null,
+                            "No se pudo compilar el archivo Syntactic.cup.\n" + exe.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    exe.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "El archivo Syntactic.cup no fue encontrado en la ruta especificada.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
-
-
 
     private JButton createStyledButton(String text, Color color, String iconPath) {
         JButton button = new JButton(text);
@@ -242,7 +203,6 @@ public class IDECompilador extends JFrame {
         button.setFont(new Font("Arial", Font.BOLD, 14));
         button.setPreferredSize(new Dimension(120, 40));
 
-        // Cargar y redimensionar icono
         ImageIcon icon = new ImageIcon(iconPath);
         Image img = icon.getImage();
         Image resizedImg = img.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
