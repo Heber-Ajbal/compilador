@@ -30,10 +30,11 @@ terminal ident, pyc, INT, DOUBLE, BOOL, STRING, OpeningBracket, ClosedBracket,
     ComparisonOperators, equality, negative, sum, ArithmeticOperators, denial,
     Brackets, and, or, Parenthesis, CurlyBrackets, sUsing, namespaceName, sNameSpace,
     sPublic, sPrivate, sProtected, sGet, sSet, sStatic, sVirtual, sOverride,
-    sAbstract, colon,sInterface,IncrementOperator,sDo,sTry, sCatch, sFinally,sSwitch, sCase, sDefault;
+    sAbstract, colon,sInterface,IncrementOperator,sDo,sTry, sCatch, sFinally,sSwitch, sCase, sDefault,
+    sParams, sRef, sOut;
 
 /* Non Terminals */
-non terminal Program, ProgramA, Decl, VariableDecl, VariableDeclAux, Variable,
+non terminal Program, ProgramA, Decl, VariableDecl, VariableDeclAux, Variable,InitList,InitListRepeat,ArrayInitializer,
     Type, FunctionDecl, FormalListOpt, RepeatVariable, ClassDecl, ExtClause,
     BaseTypeList, MoreBaseTypes, InterfaceDecl, Prototype, RepeatablePrototype,
     StmtBlock, Stmt, StmtAux, IfStmt, ElseStmt, WhileStmt, ForStmt, ReturnStmt,
@@ -41,7 +42,7 @@ non terminal Program, ProgramA, Decl, VariableDecl, VariableDeclAux, Variable,
     Actuals, Constant, UsingDirective, NamespaceDecl, RepeatableNamespaceContent,
     PropertyDecl, Accessors, Accessor, AllModifiersOpt, FunctionModifier,
     MemberDecl, ConstructorDecl, ClassMemberDecls,VariableDeclStmt,ForInit,ForCond,ForIter,DoWhileStmt,TryCatchStmt,
-    TryCatchFinallyStmt,CatchBlock,SwitchStmt,SwitchSections,SwitchSection,StmtList;
+    TryCatchFinallyStmt,CatchBlock,SwitchStmt,SwitchSections,SwitchSection,StmtList,ParamModifierOpt,Param;
 
 /* Precedence */
 precedence left assignment;
@@ -92,7 +93,8 @@ ConstructorDecl ::= ident OpeningParenthesis FormalListOpt ClosedParenthesis Stm
 VariableDeclStmt ::= VariableDecl pyc;
 
 VariableDecl ::= Variable
-               | Variable assignment Expr;
+               | Variable assignment Expr
+               | Variable assignment ArrayInitializer;
 
 Variable ::= Type ident;
 
@@ -101,8 +103,15 @@ Type ::= INT | DOUBLE | BOOL | STRING | ident | Type Brackets;
 FunctionDecl ::= Type ident OpeningParenthesis FormalListOpt ClosedParenthesis StmtBlock
                | sVoid ident OpeningParenthesis FormalListOpt ClosedParenthesis StmtBlock;
 
-FormalListOpt ::= Variable RepeatVariable | /* epsilon */;
-RepeatVariable ::= comma Variable RepeatVariable | /* epsilon */;
+FormalListOpt ::= Param RepeatVariable | /* epsilon */;
+RepeatVariable ::= comma Param RepeatVariable | /* epsilon */;
+
+Param ::= ParamModifierOpt Type ident;
+
+ParamModifierOpt ::= sParams
+                   | sRef
+                   | sOut
+                   | /* epsilon */;
 
 ClassDecl ::= sClass ident ExtClause OpeningCurlyBracket ClassMemberDecls ClosedCurlyBracket
             | sClass ident ExtClause CurlyBrackets;
@@ -198,7 +207,12 @@ Expr ::= LValue assignment Expr
        | sReadLine Parenthesis
        | sMalloc OpeningParenthesis Expr ClosedParenthesis
        | IncrementOperator Expr      // ++i
-       | Expr IncrementOperator;     // i++
+       | Expr IncrementOperator
+       |sNew Type OpeningBracket Expr ClosedBracket;
+
+ArrayInitializer ::= OpeningCurlyBracket InitList ClosedCurlyBracket;
+InitList ::= Expr InitListRepeat | /* vacío */;
+InitListRepeat ::= comma Expr InitListRepeat | /* vacío */;
 
 LValue ::= ident
          | Expr dot ident
