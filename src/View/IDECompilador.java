@@ -53,7 +53,7 @@ public class IDECompilador extends JFrame {
         codeEditor = new JTextPane ();
         codeEditor.setBackground(new Color(230, 230, 230));
         codeEditor.setForeground(Color.BLACK);
-        codeEditor.setCaretColor(Color.WHITE);
+        codeEditor.setCaretColor(Color.BLACK);
         codeEditor.setCaretPosition(0);
         codeEditor.setFont(new Font("Monospaced", Font.PLAIN,19 ));
         JScrollPane codeScrollPane = new JScrollPane(codeEditor);
@@ -65,7 +65,7 @@ public class IDECompilador extends JFrame {
         DefaultTableModel symbolModel = new DefaultTableModel(columnNames, 0);
         symbolTable = new JTable(symbolModel);
         symbolTable.setBackground(new Color(60, 63, 65));
-        symbolTable.setForeground(Color.WHITE);
+        symbolTable.setForeground(Color.white);
         JScrollPane tableScrollPane = new JScrollPane(symbolTable);
 
         mainSplitPane.setLeftComponent(codeScrollPane);
