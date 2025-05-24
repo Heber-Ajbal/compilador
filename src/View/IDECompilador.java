@@ -263,7 +263,21 @@ public class IDECompilador extends JFrame {
         for (int i = 0; i < tokens.size() - 1; i++) {
             if (tokens.get(i).token.equals("class") && tokens.get(i + 1).type.equals("T_Identifier")) {
                 TypeTable.add(new ClassSymbol(tokens.get(i + 1).token, false));
+
+                // Verificar herencia: class Empleado : Persona
+                if (i + 3 < tokens.size() &&
+                        tokens.get(i + 2).token.equals(":") &&
+                        tokens.get(i + 3).type.equals("T_Identifier")) {
+
+                    String baseClass = tokens.get(i + 3).token;
+
+                    if (!TypeTable.exists(baseClass)) {
+                        SemanticError.add("Error semántico: Clase base '" + baseClass +
+                                "' no declarada (línea " + tokens.get(i + 3).line + ")");
+                    }
+                }
             }
+
         }
 
         boolean ignorarUsing = false;
