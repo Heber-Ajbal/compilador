@@ -1,19 +1,23 @@
 package lexical.scanner.mini.c;
 
-//Java Libraries
+// Librerías Java necesarias
 import java.util.ArrayList;
 import java_cup.runtime.Symbol;
 
+/* Código embebido en el parser de CUP */
 parser code {:
+    // Lista que almacena los errores sintácticos encontrados
     public ArrayList<String> SyntacticErrors = new ArrayList<String>();
     public int count = 0;
 
+    // Método llamado cuando ocurre un error de sintaxis recuperable
     public void syntax_error(Symbol cur_token){
         java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) cur_token);
         System.out.println("*** Error Sintactico. Linea: " + (s.left+1) + " Columna: " + (s.right+1) + ". Simbolo: \'" + s.value + "\' *** Mensaje Error: Simbolo no reconocido.");
         SyntacticErrors.add("*** Error Sintactico. Linea: " + (s.left+1) + " Columna: " + (s.right+1) + ". Simbolo: \'" + s.value + "\' *** Mensaje Error: Simbolo no reconocido.");
     }
 
+    // Método llamado cuando ocurre un error de sintaxis no recuperable
     public void unrecovered_syntax_error(Symbol cur_token){
         java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) cur_token);
         System.out.println("*** Error Sintactico No Recuperado. Linea: " + (s.left+1) + " Columna: " + (s.right+1) + ". Simbolo: \'" + s.value + "\' *** Mensaje Error: Simbolo no reconocido.");
@@ -21,30 +25,30 @@ parser code {:
     }
 :}
 
-/* Terminals */
+/* Terminales léxicos (tokens) que reconoce el analizador */
 terminal ident, pyc, INT, DOUBLE, BOOL, STRING, OpeningBracket, ClosedBracket,
     OpeningParenthesis, ClosedParenthesis, sVoid, comma, sClass, OpeningCurlyBracket,
     ClosedCurlyBracket, cIf, cElse, lWhile, lFor, sReturn, sBreak, sPrint, assignment,
-    sThis, sNew, sNewArray, sReadInteger, sMalloc, dot, sGetByte, sSetByte, sNull,sForeach, sIn,
+    sThis, sNew, sNewArray, sReadInteger, sMalloc, dot, sGetByte, sSetByte, sNull, sForeach, sIn,
     sReadLine, integerConstant, doubleConstant, boolConstant, stringConstant,
     ComparisonOperators, equality, negative, sum, ArithmeticOperators, denial,
     Brackets, and, or, Parenthesis, CurlyBrackets, sUsing, namespaceName, sNameSpace,
     sPublic, sPrivate, sProtected, sGet, sSet, sStatic, sVirtual, sOverride,
-    sAbstract, colon,sInterface,IncrementOperator,sDo,sTry, sCatch, sFinally,sSwitch, sCase, sDefault,
+    sAbstract, colon, sInterface, IncrementOperator, sDo, sTry, sCatch, sFinally, sSwitch, sCase, sDefault,
     sParams, sRef, sOut;
 
-/* Non Terminals */
-non terminal Program, ProgramA, Decl, VariableDecl, VariableDeclAux, Variable,InitList,InitListRepeat,ArrayInitializer,
+/* No terminales (símbolos no terminales de la gramática) */
+non terminal Program, ProgramA, Decl, VariableDecl, VariableDeclAux, Variable, InitList, InitListRepeat, ArrayInitializer,
     Type, FunctionDecl, FormalListOpt, RepeatVariable, ClassDecl, ExtClause,
     BaseTypeList, MoreBaseTypes, InterfaceDecl, Prototype, RepeatablePrototype,
     StmtBlock, Stmt, StmtAux, IfStmt, ElseStmt, WhileStmt, ForStmt, ReturnStmt,
-    BreakStmt, PrintStmt, Expr, ExprOZ, ExprRepeat, LValue, Call, LibCall,ForeachStmt,
+    BreakStmt, PrintStmt, Expr, ExprOZ, ExprRepeat, LValue, Call, LibCall, ForeachStmt,
     Actuals, Constant, UsingDirective, NamespaceDecl, RepeatableNamespaceContent,
-    PropertyDecl, Accessors, Accessor, AllModifiersOpt, FunctionModifier,NamespacePath,
-    MemberDecl, ConstructorDecl, ClassMemberDecls,VariableDeclStmt,ForInit,ForCond,ForIter,DoWhileStmt,TryCatchStmt,
-    TryCatchFinallyStmt,CatchBlock,SwitchStmt,SwitchSections,SwitchSection,StmtList,ParamModifierOpt,Param;
+    PropertyDecl, Accessors, Accessor, AllModifiersOpt, FunctionModifier, NamespacePath,
+    MemberDecl, ConstructorDecl, ClassMemberDecls, VariableDeclStmt, ForInit, ForCond, ForIter, DoWhileStmt, TryCatchStmt,
+    TryCatchFinallyStmt, CatchBlock, SwitchStmt, SwitchSections, SwitchSection, StmtList, ParamModifierOpt, Param;
 
-/* Precedence */
+/* Precedencia para operadores, para evitar ambigüedades */
 precedence left assignment;
 precedence left or, and;
 precedence nonassoc ComparisonOperators, equality;
@@ -54,46 +58,56 @@ precedence nonassoc OpeningBracket, dot;
 precedence nonassoc cElse;
 precedence nonassoc IncrementOperator;
 
-/* Start */
+/* Símbolo inicial de la gramática */
 start with Program;
 
-/* Grammar Rules */
-Program ::= Decl ProgramA;
-ProgramA ::= ProgramA Decl | /* epsilon */;
+/* Reglas gramaticales */
 
+// Programa completo = una o más declaraciones
+Program ::= Decl ProgramA;
+ProgramA ::= ProgramA Decl | /* vacío */;
+
+// Declaraciones posibles
 Decl ::= UsingDirective
        | NamespaceDecl
        | ClassDecl
        | InterfaceDecl
        | MemberDecl
-       | error pyc
+       | error pyc // Manejo de errores comunes
        | error ClosedCurlyBracket;
 
+// Directiva de uso de espacio de nombres
 UsingDirective ::= sUsing NamespacePath pyc;
 
+// Posible ruta compuesta de namespace (ej. System.IO)
 NamespacePath ::= ident
                 | NamespacePath dot ident;
 
-
+// Declaración de un namespace
 NamespaceDecl ::= sNameSpace ident OpeningCurlyBracket RepeatableNamespaceContent ClosedCurlyBracket
                 | sNameSpace namespaceName OpeningCurlyBracket RepeatableNamespaceContent ClosedCurlyBracket;
-RepeatableNamespaceContent ::= RepeatableNamespaceContent Decl | /* epsilon */;
 
+RepeatableNamespaceContent ::= RepeatableNamespaceContent Decl | /* vacío */;
+
+// Modificadores posibles: static, virtual, etc.
 AllModifiersOpt ::= AllModifiersOpt FunctionModifier
                   | sPublic
                   | sPrivate
                   | sProtected
-                  | /* epsilon */;
+                  | /* vacío */;
 
 FunctionModifier ::= sStatic | sVirtual | sOverride | sAbstract;
 
+// Declaración de miembros de clase
 MemberDecl ::= AllModifiersOpt ConstructorDecl
              | AllModifiersOpt FunctionDecl
              | AllModifiersOpt VariableDeclStmt
              | AllModifiersOpt PropertyDecl;
 
+// Constructor
 ConstructorDecl ::= ident OpeningParenthesis FormalListOpt ClosedParenthesis StmtBlock;
 
+// Declaración de variable
 VariableDeclStmt ::= VariableDecl pyc;
 
 VariableDecl ::= Variable
@@ -102,129 +116,102 @@ VariableDecl ::= Variable
 
 Variable ::= Type ident;
 
+// Tipos posibles
 Type ::= INT | DOUBLE | BOOL | STRING | ident | Type Brackets;
 
+// Declaración de función
 FunctionDecl ::= Type ident OpeningParenthesis FormalListOpt ClosedParenthesis StmtBlock
                | sVoid ident OpeningParenthesis FormalListOpt ClosedParenthesis StmtBlock;
 
-FormalListOpt ::= Param RepeatVariable | /* epsilon */;
-RepeatVariable ::= comma Param RepeatVariable | /* epsilon */;
+FormalListOpt ::= Param RepeatVariable | /* vacío */;
+RepeatVariable ::= comma Param RepeatVariable | /* vacío */;
 
+// Parámetros con modificadores como ref, out, params
 Param ::= ParamModifierOpt Type ident;
+ParamModifierOpt ::= sParams | sRef | sOut | /* vacío */;
 
-ParamModifierOpt ::= sParams
-                   | sRef
-                   | sOut
-                   | /* epsilon */;
-
+// Declaración de clase e interfaces
 ClassDecl ::= sClass ident ExtClause OpeningCurlyBracket ClassMemberDecls ClosedCurlyBracket
             | sClass ident ExtClause CurlyBrackets;
 
-ExtClause ::= colon BaseTypeList | /* epsilon */;
+ExtClause ::= colon BaseTypeList | /* vacío */;
 BaseTypeList ::= ident MoreBaseTypes;
-MoreBaseTypes ::= comma ident MoreBaseTypes | /* epsilon */;
+MoreBaseTypes ::= comma ident MoreBaseTypes | /* vacío */;
 
-ClassMemberDecls ::= ClassMemberDecls MemberDecl | /* epsilon */;
+ClassMemberDecls ::= ClassMemberDecls MemberDecl | /* vacío */;
 
 InterfaceDecl ::= sInterface ident OpeningCurlyBracket RepeatablePrototype ClosedCurlyBracket
                 | sInterface ident CurlyBrackets;
-RepeatablePrototype ::= RepeatablePrototype Prototype | /* epsilon */;
 
+RepeatablePrototype ::= RepeatablePrototype Prototype | /* vacío */;
 Prototype ::= Type ident OpeningParenthesis FormalListOpt ClosedParenthesis pyc
             | sVoid ident OpeningParenthesis FormalListOpt ClosedParenthesis pyc;
 
+// Bloques y sentencias
 StmtBlock ::= OpeningCurlyBracket VariableDeclAux StmtAux ClosedCurlyBracket
             | CurlyBrackets;
 
-VariableDeclAux ::= VariableDeclAux VariableDeclStmt | /* epsilon */;
-StmtAux ::= Stmt StmtAux | /* epsilon */;
+VariableDeclAux ::= VariableDeclAux VariableDeclStmt | /* vacío */;
+StmtAux ::= Stmt StmtAux | /* vacío */;
 
-Stmt ::= Expr pyc
-       | pyc
-       | IfStmt
-       | WhileStmt
-       | ForStmt
-       | BreakStmt
-       | ReturnStmt
-       | PrintStmt
-       | StmtBlock
-       | TryCatchStmt
-       | TryCatchFinallyStmt
-       | SwitchStmt
-       | ForeachStmt
-       | DoWhileStmt;
+Stmt ::= Expr pyc | pyc | IfStmt | WhileStmt | ForStmt | BreakStmt | ReturnStmt | PrintStmt
+       | StmtBlock | TryCatchStmt | TryCatchFinallyStmt | SwitchStmt | ForeachStmt | DoWhileStmt;
 
-ExprOZ ::= Expr | /* epsilon */;
+ExprOZ ::= Expr | /* vacío */;
 
+// Control de flujo
 IfStmt ::= cIf OpeningParenthesis Expr ClosedParenthesis Stmt ElseStmt;
-ElseStmt ::= cElse Stmt | /* epsilon */;
+ElseStmt ::= cElse Stmt | /* vacío */;
 WhileStmt ::= lWhile OpeningParenthesis Expr ClosedParenthesis Stmt;
 DoWhileStmt ::= sDo Stmt lWhile OpeningParenthesis Expr ClosedParenthesis pyc;
 
 ForeachStmt ::= sForeach OpeningParenthesis Type ident sIn Expr ClosedParenthesis StmtBlock;
 
 TryCatchStmt ::= sTry StmtBlock CatchBlock;
-
 TryCatchFinallyStmt ::= sTry StmtBlock CatchBlock sFinally StmtBlock;
-
 CatchBlock ::= sCatch OpeningParenthesis Type ident ClosedParenthesis StmtBlock;
 
+// Sentencia switch
 SwitchStmt ::= sSwitch OpeningParenthesis Expr ClosedParenthesis OpeningCurlyBracket SwitchSections ClosedCurlyBracket;
+SwitchSections ::= SwitchSections SwitchSection | /* vacío */;
+SwitchSection ::= sCase Constant colon StmtList | sDefault colon StmtList;
+StmtList ::= Stmt StmtList | /* vacío */;
 
-SwitchSections ::= SwitchSections SwitchSection | /* epsilon */;
-
-SwitchSection ::= sCase Constant colon StmtList
-                | sDefault colon StmtList;
-
-StmtList ::= Stmt StmtList | /* epsilon */;
-
-/* For estrictamente válido: no permite vacío */
-ForInit ::= VariableDecl
-          | Expr;
-
+// Sentencia for (estructurada, sin vacío)
+ForInit ::= VariableDecl | Expr;
 ForCond ::= Expr;
 ForIter ::= Expr;
-
 ForStmt ::= lFor OpeningParenthesis ForInit pyc ForCond pyc ForIter ClosedParenthesis Stmt;
 
 ReturnStmt ::= sReturn ExprOZ pyc;
 BreakStmt ::= sBreak pyc;
 
+// Impresión
 PrintStmt ::= sPrint OpeningParenthesis Expr ExprRepeat ClosedParenthesis pyc;
-ExprRepeat ::= comma Expr ExprRepeat | /* epsilon */;
+ExprRepeat ::= comma Expr ExprRepeat | /* vacío */;
 
+// Expresiones
 Expr ::= LValue assignment Expr
-       | Constant
-       | LValue
-       | sThis
-       | Call
-       | OpeningParenthesis Expr ClosedParenthesis
-       | Expr ArithmeticOperators Expr
-       | Expr sum Expr
-       | Expr negative Expr
-       | Expr and Expr
-       | Expr or Expr
-       | Expr equality Expr
-       | Expr ComparisonOperators Expr
-       | negative Expr
-       | denial Expr
+       | Constant | LValue | sThis | Call | OpeningParenthesis Expr ClosedParenthesis
+       | Expr ArithmeticOperators Expr | Expr sum Expr | Expr negative Expr
+       | Expr and Expr | Expr or Expr | Expr equality Expr | Expr ComparisonOperators Expr
+       | negative Expr | denial Expr
        | sNew OpeningParenthesis ident ClosedParenthesis
        | sNewArray OpeningParenthesis Expr comma Type ClosedParenthesis
-       | sReadInteger Parenthesis
-       | sReadLine Parenthesis
+       | sReadInteger Parenthesis | sReadLine Parenthesis
        | sMalloc OpeningParenthesis Expr ClosedParenthesis
-       | IncrementOperator Expr      // ++i
-       | Expr IncrementOperator
-       |sNew Type OpeningBracket Expr ClosedBracket;
+       | IncrementOperator Expr | Expr IncrementOperator
+       | sNew Type OpeningBracket Expr ClosedBracket;
 
+// Inicialización de arreglos
 ArrayInitializer ::= OpeningCurlyBracket InitList ClosedCurlyBracket;
 InitList ::= Expr InitListRepeat | /* vacío */;
 InitListRepeat ::= comma Expr InitListRepeat | /* vacío */;
 
-LValue ::= ident
-         | Expr dot ident
-         | Expr OpeningBracket Expr ClosedBracket;
+// Acceso a variables
+LValue ::= ident | Expr dot ident | Expr OpeningBracket Expr ClosedBracket;
 
+// Llamadas a funciones
 Call ::= ident OpeningParenthesis Actuals ClosedParenthesis
        | ident Parenthesis
        | Expr dot ident OpeningParenthesis Actuals ClosedParenthesis
@@ -235,17 +222,12 @@ Call ::= ident OpeningParenthesis Actuals ClosedParenthesis
 LibCall ::= sGetByte OpeningParenthesis Expr ClosedParenthesis
           | sSetByte OpeningParenthesis Expr comma Expr ClosedParenthesis;
 
-Actuals ::= Expr ExprRepeat | /* epsilon */;
+Actuals ::= Expr ExprRepeat | /* vacío */;
 
-Constant ::= integerConstant
-           | doubleConstant
-           | boolConstant
-           | stringConstant
-           | sNull;
+// Constantes
+Constant ::= integerConstant | doubleConstant | boolConstant | stringConstant | sNull;
 
+// Propiedades
 PropertyDecl ::= Type ident OpeningCurlyBracket Accessors ClosedCurlyBracket;
 Accessors ::= Accessor Accessors | Accessor;
-Accessor ::= sGet StmtBlock
-           | sSet StmtBlock
-           | sGet pyc
-           | sSet pyc;
+Accessor ::= sGet StmtBlock | sSet StmtBlock | sGet pyc | sSet pyc;
