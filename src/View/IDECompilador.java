@@ -414,7 +414,13 @@ public class IDECompilador extends JFrame {
 
             if (FunctionTable.exists(nombreFuncion)) {
                 FunctionSymbol f = FunctionTable.get(nombreFuncion);
-                if (f.paramTypes.equals(argumentos)) return f.returnType;
+
+                if (f.paramTypes.size() != argumentos.size()) {
+                    SemanticError.add("Error semántico: Llamada a función '" + nombreFuncion +
+                            "' con número incorrecto de argumentos (esperado: " + f.paramTypes.size() +
+                            ", recibido: " + argumentos.size() + ")");
+                    return "error";
+                }
 
                 boolean coercion = true;
                 for (int k = 0; k < argumentos.size(); k++) {
@@ -427,10 +433,11 @@ public class IDECompilador extends JFrame {
                         }
                     }
                 }
-                if (coercion) return f.returnType;
-
+                return coercion ? f.returnType : "error";
+            } else {
+                SemanticError.add("Error semántico: Llamada a función '" + nombreFuncion + "' no declarada");
                 return "error";
-            } else return "error";
+            }
         }
 
         String tipo = inferirTipoLiteral(tokens.get(inicio));
@@ -461,6 +468,7 @@ public class IDECompilador extends JFrame {
         return tipo;
     }
 
+    
     private static String inferirTipoLiteral(Yytoken token) {
         String valor = token.token;
         if (valor.matches("^\\d+$")) return "int";
