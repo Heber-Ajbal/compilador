@@ -240,7 +240,13 @@ public class IDECompilador extends JFrame {
 
     public static void analizarSemantico(List<Yytoken> tokens) {
         SymbolTable.clear();
+        FunctionTable.clear();
+        TypeTable.clear();
         SemanticError.clear();
+
+        registrarClases(tokens);      // ✅ Registrar clases antes del análisis
+        registrarFunciones(tokens);   // ✅ Registrar funciones antes del análisis
+
         SymbolTable.openScope();
 
         Set<String> palabrasClaveIgnorar = Set.of(
@@ -253,32 +259,10 @@ public class IDECompilador extends JFrame {
                 "NullReferenceException", "DivideByZeroException", "FormatException", "IndexOutOfRangeException"
         ));
 
-        // Tipos y funciones conocidas
         TypeTable.add(new ClassSymbol("Console", true));
         FunctionTable.add(new FunctionSymbol("WriteLine", "void", List.of("string")));
         FunctionTable.add(new FunctionSymbol("WriteLine", "void", List.of("string", "int")));
         FunctionTable.add(new FunctionSymbol("ReadLine", "string", List.of()));
-        FunctionTable.add(new FunctionSymbol("CalcularAreaCirculo", "double", List.of("int")));
-
-        for (int i = 0; i < tokens.size() - 1; i++) {
-            if (tokens.get(i).token.equals("class") && tokens.get(i + 1).type.equals("T_Identifier")) {
-                TypeTable.add(new ClassSymbol(tokens.get(i + 1).token, false));
-
-                // Verificar herencia: class Empleado : Persona
-                if (i + 3 < tokens.size() &&
-                        tokens.get(i + 2).token.equals(":") &&
-                        tokens.get(i + 3).type.equals("T_Identifier")) {
-
-                    String baseClass = tokens.get(i + 3).token;
-
-                    if (!TypeTable.exists(baseClass)) {
-                        SemanticError.add("Error semántico: Clase base '" + baseClass +
-                                "' no declarada (línea " + tokens.get(i + 3).line + ")");
-                    }
-                }
-            }
-
-        }
 
         boolean ignorarUsing = false;
 
@@ -291,16 +275,13 @@ public class IDECompilador extends JFrame {
             }
 
             if (ignorarUsing) {
-                if (t.token.equals(";")) {
-                    ignorarUsing = false;
-                }
+                if (t.token.equals(";")) ignorarUsing = false;
                 continue;
             }
 
             if (palabrasClaveIgnorar.contains(t.token)) continue;
             if (i > 0 && palabrasClaveIgnorar.contains(tokens.get(i - 1).token)) continue;
 
-            // Manejo de scopes para bloques
             if (t.token.equals("{")) {
                 SymbolTable.openScope();
                 continue;
@@ -310,58 +291,8 @@ public class IDECompilador extends JFrame {
                 continue;
             }
 
-            // Declaración de funciones o constructores
-            if (i + 4 < tokens.size() &&
-                    tiposConocidos.contains(tokens.get(i).token) &&
-                    tokens.get(i + 1).type.equals("T_Identifier") &&
-                    tokens.get(i + 2).token.equals("(")) {
-
-                String returnType = tokens.get(i).token;
-                String funcName = tokens.get(i + 1).token;
-                List<String> paramTypes = new ArrayList<>();
-
-                SymbolTable.openScope();
-
-                int j = i + 3;
-                while (j < tokens.size() && !tokens.get(j).token.equals(")")) {
-                    if (tiposConocidos.contains(tokens.get(j).token) &&
-                            j + 1 < tokens.size() && tokens.get(j + 1).type.equals("T_Identifier")) {
-                        String tipo = tokens.get(j).token;
-                        String nombre = tokens.get(j + 1).token;
-                        if (!SymbolTable.exists(nombre)) {
-                            SymbolTable.add(nombre, new MySymbol(nombre, tipo, tokens.get(j + 1).line, false));
-                        }
-                        paramTypes.add(tipo);
-                        j++;
-                    }
-                    j++;
-                }
-
-                FunctionTable.add(new FunctionSymbol(funcName, returnType, paramTypes));
-                CurrentContext.setFunctionType(returnType);
-
-                // Cierre automático del scope cuando termina el cuerpo
-                int llaves = 0;
-                boolean entroBloque = false;
-                for (int k = i + 1; k < tokens.size(); k++) {
-                    if (tokens.get(k).token.equals("{")) {
-                        llaves++;
-                        entroBloque = true;
-                    } else if (tokens.get(k).token.equals("}")) {
-                        llaves--;
-                        if (entroBloque && llaves == 0) {
-                            SymbolTable.closeScope();
-                            break;
-                        }
-                    }
-                }
-
-                continue;
-            }
-
             boolean isConst = (i > 0 && tokens.get(i - 1).token.equals("const"));
 
-            // Declaración de variables
             if (i > 0 && tiposConocidos.contains(tokens.get(i - 1).token) && t.type.equals("T_Identifier")) {
                 String nombre = t.token;
                 if (SymbolTable.exists(nombre)) {
@@ -372,7 +303,6 @@ public class IDECompilador extends JFrame {
                 continue;
             }
 
-            // Tipado de asignación
             if (i >= 2 && tiposConocidos.contains(tokens.get(i - 2).token) &&
                     tokens.get(i - 1).type.equals("T_Identifier") &&
                     t.token.equals("=")) {
@@ -389,16 +319,14 @@ public class IDECompilador extends JFrame {
                 }
             }
 
-            // Llamada a función
             if (t.type.equals("T_Identifier") && i + 1 < tokens.size() && tokens.get(i + 1).token.equals("(")) {
                 String funcName = t.token;
-                if (!FunctionTable.exists(funcName) && !TypeTable.exists(funcName)) {
+                if (!FunctionTable.exists(funcName)) {
                     SemanticError.add("Error semántico: La función '" + funcName + "' no ha sido declarada (línea " + t.line + ")");
                     continue;
                 }
             }
 
-            // catch (Tipo id)
             if (i >= 2 && tokens.get(i - 2).token.equals("catch") &&
                     tiposConocidos.contains(tokens.get(i - 1).token) &&
                     t.type.equals("T_Identifier")) {
@@ -406,7 +334,6 @@ public class IDECompilador extends JFrame {
                 continue;
             }
 
-            // Identificadores no declarados
             if (t.type.equals("T_Identifier") &&
                     !SymbolTable.exists(t.token) &&
                     !TypeTable.exists(t.token) &&
@@ -416,7 +343,6 @@ public class IDECompilador extends JFrame {
                 SemanticError.add("Error semántico: Variable o miembro '" + t.token + "' usada sin declarar (línea " + t.line + ")");
             }
 
-            // Constantes no asignables
             if (t.type.equals("T_Identifier") && i + 1 < tokens.size() && tokens.get(i + 1).token.equals("=")) {
                 String nombre = t.token;
                 if (SymbolTable.exists(nombre)) {
@@ -429,22 +355,84 @@ public class IDECompilador extends JFrame {
             }
         }
 
-        SymbolTable.closeScope(); // cerrar scope global
+        SymbolTable.closeScope();
     }
 
-    private static String inferirTipoLiteral(Yytoken token) {
-        String valor = token.token;
+    public static void registrarFunciones(List<Yytoken> tokens) {
+        Set<String> tiposConocidos = Set.of("int", "double", "bool", "string", "void", "string[]");
 
-        if (valor.matches("^\\d+$")) return "int";                     // Ej: 5
-        if (valor.matches("^\\d+\\.\\d+$")) return "double";           // Ej: 3.14
-        if (valor.startsWith("\"") && valor.endsWith("\"")) return "string"; // Ej: "hola"
-        if (valor.equals("true") || valor.equals("false")) return "bool";
+        for (int i = 0; i < tokens.size() - 4; i++) {
+            if (tiposConocidos.contains(tokens.get(i).token) &&
+                    tokens.get(i + 1).type.equals("T_Identifier") &&
+                    tokens.get(i + 2).token.equals("(")) {
 
-        return "desconocido";
+                String returnType = tokens.get(i).token;
+                String funcName = tokens.get(i + 1).token;
+                List<String> paramTypes = new ArrayList<>();
+
+                int j = i + 3;
+                while (j < tokens.size() && !tokens.get(j).token.equals(")")) {
+                    if (tiposConocidos.contains(tokens.get(j).token) &&
+                            j + 1 < tokens.size() && tokens.get(j + 1).type.equals("T_Identifier")) {
+
+                        paramTypes.add(tokens.get(j).token);
+                        j++;
+                    }
+                    j++;
+                }
+
+                FunctionTable.add(new FunctionSymbol(funcName, returnType, paramTypes));
+            }
+        }
     }
 
+    public static void registrarClases(List<Yytoken> tokens) {
+        for (int i = 0; i < tokens.size() - 1; i++) {
+            if (tokens.get(i).token.equals("class") && tokens.get(i + 1).type.equals("T_Identifier")) {
+                TypeTable.add(new ClassSymbol(tokens.get(i + 1).token, false));
+            }
+        }
+    }
 
     private static String inferirTipoExpr(List<Yytoken> tokens, int inicio) {
+        if (tokens.get(inicio).type.equals("T_Identifier") &&
+                inicio + 1 < tokens.size() && tokens.get(inicio + 1).token.equals("(")) {
+
+            String nombreFuncion = tokens.get(inicio).token;
+            List<String> argumentos = new ArrayList<>();
+
+            int j = inicio + 2;
+            while (j < tokens.size() && !tokens.get(j).token.equals(")")) {
+                String tipoArg = inferirTipoLiteral(tokens.get(j));
+                if (tipoArg.equals("desconocido") && SymbolTable.exists(tokens.get(j).token)) {
+                    tipoArg = SymbolTable.get(tokens.get(j).token).type;
+                }
+                argumentos.add(tipoArg);
+                j++;
+                if (j < tokens.size() && tokens.get(j).token.equals(",")) j++;
+            }
+
+            if (FunctionTable.exists(nombreFuncion)) {
+                FunctionSymbol f = FunctionTable.get(nombreFuncion);
+                if (f.paramTypes.equals(argumentos)) return f.returnType;
+
+                boolean coercion = true;
+                for (int k = 0; k < argumentos.size(); k++) {
+                    String esperado = f.paramTypes.get(k);
+                    String dado = argumentos.get(k);
+                    if (!esperado.equals(dado)) {
+                        if (!(esperado.equals("double") && dado.equals("int"))) {
+                            coercion = false;
+                            break;
+                        }
+                    }
+                }
+                if (coercion) return f.returnType;
+
+                return "error";
+            } else return "error";
+        }
+
         String tipo = inferirTipoLiteral(tokens.get(inicio));
         if (tipo.equals("desconocido") && SymbolTable.exists(tokens.get(inicio).token)) {
             tipo = SymbolTable.get(tokens.get(inicio).token).type;
@@ -470,9 +458,19 @@ public class IDECompilador extends JFrame {
 
             i += 2;
         }
-
         return tipo;
     }
+
+    private static String inferirTipoLiteral(Yytoken token) {
+        String valor = token.token;
+        if (valor.matches("^\\d+$")) return "int";
+        if (valor.matches("^\\d+\\.\\d+$")) return "double";
+        if (valor.startsWith("\"") && valor.endsWith("\"")) return "string";
+        if (valor.equals("true") || valor.equals("false")) return "bool";
+        return "desconocido";
+    }
+
+
 
 
     private JButton createStyledButton(String text, Color color, String iconPath) {
