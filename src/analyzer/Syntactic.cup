@@ -25,7 +25,7 @@ parser code {:
 terminal ident, pyc, INT, DOUBLE, BOOL, STRING, OpeningBracket, ClosedBracket,
     OpeningParenthesis, ClosedParenthesis, sVoid, comma, sClass, OpeningCurlyBracket,
     ClosedCurlyBracket, cIf, cElse, lWhile, lFor, sReturn, sBreak, sPrint, assignment,
-    sThis, sNew, sNewArray, sReadInteger, sMalloc, dot, sGetByte, sSetByte, sNull,
+    sThis, sNew, sNewArray, sReadInteger, sMalloc, dot, sGetByte, sSetByte, sNull,sForeach, sIn,
     sReadLine, integerConstant, doubleConstant, boolConstant, stringConstant,
     ComparisonOperators, equality, negative, sum, ArithmeticOperators, denial,
     Brackets, and, or, Parenthesis, CurlyBrackets, sUsing, namespaceName, sNameSpace,
@@ -38,9 +38,9 @@ non terminal Program, ProgramA, Decl, VariableDecl, VariableDeclAux, Variable,In
     Type, FunctionDecl, FormalListOpt, RepeatVariable, ClassDecl, ExtClause,
     BaseTypeList, MoreBaseTypes, InterfaceDecl, Prototype, RepeatablePrototype,
     StmtBlock, Stmt, StmtAux, IfStmt, ElseStmt, WhileStmt, ForStmt, ReturnStmt,
-    BreakStmt, PrintStmt, Expr, ExprOZ, ExprRepeat, LValue, Call, LibCall,
+    BreakStmt, PrintStmt, Expr, ExprOZ, ExprRepeat, LValue, Call, LibCall,ForeachStmt,
     Actuals, Constant, UsingDirective, NamespaceDecl, RepeatableNamespaceContent,
-    PropertyDecl, Accessors, Accessor, AllModifiersOpt, FunctionModifier,
+    PropertyDecl, Accessors, Accessor, AllModifiersOpt, FunctionModifier,NamespacePath,
     MemberDecl, ConstructorDecl, ClassMemberDecls,VariableDeclStmt,ForInit,ForCond,ForIter,DoWhileStmt,TryCatchStmt,
     TryCatchFinallyStmt,CatchBlock,SwitchStmt,SwitchSections,SwitchSection,StmtList,ParamModifierOpt,Param;
 
@@ -69,7 +69,11 @@ Decl ::= UsingDirective
        | error pyc
        | error ClosedCurlyBracket;
 
-UsingDirective ::= sUsing namespaceName pyc | sUsing ident pyc;
+UsingDirective ::= sUsing NamespacePath pyc;
+
+NamespacePath ::= ident
+                | NamespacePath dot ident;
+
 
 NamespaceDecl ::= sNameSpace ident OpeningCurlyBracket RepeatableNamespaceContent ClosedCurlyBracket
                 | sNameSpace namespaceName OpeningCurlyBracket RepeatableNamespaceContent ClosedCurlyBracket;
@@ -147,6 +151,7 @@ Stmt ::= Expr pyc
        | TryCatchStmt
        | TryCatchFinallyStmt
        | SwitchStmt
+       | ForeachStmt
        | DoWhileStmt;
 
 ExprOZ ::= Expr | /* epsilon */;
@@ -155,6 +160,8 @@ IfStmt ::= cIf OpeningParenthesis Expr ClosedParenthesis Stmt ElseStmt;
 ElseStmt ::= cElse Stmt | /* epsilon */;
 WhileStmt ::= lWhile OpeningParenthesis Expr ClosedParenthesis Stmt;
 DoWhileStmt ::= sDo Stmt lWhile OpeningParenthesis Expr ClosedParenthesis pyc;
+
+ForeachStmt ::= sForeach OpeningParenthesis Type ident sIn Expr ClosedParenthesis StmtBlock;
 
 TryCatchStmt ::= sTry StmtBlock CatchBlock;
 

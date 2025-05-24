@@ -243,7 +243,6 @@ Record = ("record")
 
 /* Identifiers */
 Identifiers = [a-zA-Z_]([a-zA-Z0-9_])*
-NamespaceName = [a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*
 
 
 /* White Spaces */
@@ -328,6 +327,16 @@ Dot = (".")
 
 %%
 
+[0-9]+[a-zA-Z_][a-zA-Z0-9_]* {
+    String tipo = "error";
+    this.tokens.add(new Yytoken(
+        yytext(), yyline, yycolumn,
+        "Identificador no válido iniciado con número",
+        true,
+        getColorForType(tipo)
+    ));
+}
+
 /*  Lexical rules    */
 
 {UnrecognizedCharacters}    {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Unrecognized char", true)); /* It's error so it doesn't return nothing */}
@@ -379,10 +388,10 @@ Dot = (".")
 {False}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("t_logicalconstant"))); return symbol(sym.boolConstant); }
 {Fixed}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
 {Float}       { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("tipo de dato"))); return symbol(sym.sAbstract); }
-{Foreach}     { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{Foreach}     { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sForeach); }
 {Goto}        { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
 {Implicit}    { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
-{In}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
+{In}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sIn); }
 {Internal}    { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
 {Is}          { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("operador"))); return symbol(sym.sAbstract); }
 {Lock}        { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, this.typeReservedWords(yytext()), false, getColorForType("palabra reservada"))); return symbol(sym.sAbstract); }
@@ -526,7 +535,6 @@ Dot = (".")
 
 /*  Identifiers  */
 {Identifiers}               {this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "T_Identifier", false)); return symbol(sym.ident);}
-{NamespaceName}  { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "T_Identifier", false)); return symbol(sym.namespaceName);}
 {WhiteSpace}                { /* ignore */ }
 {Comments}                  { this.tokens.add(new Yytoken(yytext(), yyline, yycolumn, "Comentario", false,getColorForType("comentario"))); }
 /*Errors*/
