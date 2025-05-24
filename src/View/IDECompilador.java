@@ -90,7 +90,7 @@ public class IDECompilador extends JFrame {
         StyleConstants.setBold(keywordStyle, true);
 
         Style normalStyle = codeEditor.addStyle("Normal", null);
-        StyleConstants.setForeground(normalStyle, Color.WHITE);
+        StyleConstants.setForeground(normalStyle, Color.black);
 
 
         executeButton.addActionListener(new ActionListener() {
@@ -464,7 +464,7 @@ public class IDECompilador extends JFrame {
     private JButton createStyledButton(String text, Color color, String iconPath) {
         JButton button = new JButton(text);
         button.setBackground(color);
-        button.setForeground(Color.WHITE);
+        button.setForeground(Color.black);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setFont(new Font("Arial", Font.BOLD, 14));
